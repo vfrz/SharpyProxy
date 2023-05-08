@@ -2,5 +2,6 @@ import ClusterDestinationModel from "~/models/cluster/destination/ClusterDestina
 
 export default interface ClusterModel {
     id: string,
-    destinations: ClusterDestinationModel[]
+    destinations: ClusterDestinationModel[],
+    enabled: boolean
 }

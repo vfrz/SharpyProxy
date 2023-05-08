@@ -47,8 +47,10 @@
 import {Disclosure, DisclosureButton, DisclosurePanel} from '@headlessui/vue';
 
 const pages = [
-    {name: 'Dashboard', href: '/'},
-    {name: 'Clusters', href: '/clusters'},
-    {name: 'Routes', href: '/routes'}
+    {name: "Dashboard", href: "/"},
+    {name: "Clusters", href: "/clusters"},
+    {name: "Routes", href: "/routes"},
+    {name: "Certificates", href: "/certificates"},
+    {name: "Audit log", href: "/log"}
 ]
 </script>

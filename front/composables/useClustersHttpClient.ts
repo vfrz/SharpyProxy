@@ -1,5 +1,6 @@
 import {ofetch} from "ofetch";
 import ClusterModel from "~/models/cluster/ClusterModel";
+import CreateClusterModel from "~/models/cluster/CreateClusterModel";
 
 export default function () {
     const runtimeConfig = useRuntimeConfig()
@@ -8,6 +9,13 @@ export default function () {
         baseURL: runtimeConfig.public.apiBaseUrl
     })
 
+    const create = async (model: CreateClusterModel): Promise<string> => {
+        return await httpClient<string>("/clusters", {
+            method: "post",
+            body: model
+        })
+    }
+    
     const list = async (): Promise<ClusterModel[]> => {
         return await httpClient<ClusterModel[]>("/clusters", {
             method: "get"
@@ -15,6 +23,7 @@ export default function () {
     }
 
     return {
+        create,
         list
     }
 }
