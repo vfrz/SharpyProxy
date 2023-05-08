@@ -72,4 +72,23 @@ public class ClusterService
 
         return model;
     }
+
+    public async Task<ClusterModel[]> ListAsync()
+    {
+        var clusters = await _appDbContext.Clusters
+            .Include(cluster => cluster.Destinations)
+            .ToListAsync();
+
+        var models = clusters.Select(cluster => new ClusterModel
+        {
+            Id = cluster.Id,
+            Destinations = cluster.Destinations.Select(destination => new ClusterDestinationModel
+            {
+                Id = destination.Id,
+                Address = destination.Address
+            }).ToArray()
+        }).ToArray();
+
+        return models;
+    }
 }

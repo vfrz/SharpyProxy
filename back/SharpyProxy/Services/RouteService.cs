@@ -66,4 +66,20 @@ public class RouteService
 
         return model;
     }
+    
+    public async Task<RouteModel[]> ListAsync()
+    {
+        var routes = await _appDbContext.Routes
+            .ToListAsync();
+
+        var models = routes.Select(route => new RouteModel
+        {
+            Id = route.Id,
+            ClusterId = route.ClusterId,
+            MatchHosts = route.MatchHosts.ToArray(),
+            MatchPath = route.MatchPath
+        }).ToArray();
+
+        return models;
+    }
 }

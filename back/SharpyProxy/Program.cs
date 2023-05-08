@@ -1,17 +1,22 @@
-using Microsoft.AspNetCore.Mvc;
-using SharpyProxy.Proxy;
 using SharpyProxy.Setup;
 
 var builder = WebApplication.CreateBuilder(args)
     .SetupDatabase()
     .SetupProxyServices();
 
-var app = builder.Build()
-    .SetupEndpoints();
-app.MapGet("/.proxy-api/refresh", ([FromServices] CustomProxyConfigProvider proxyConfigProvider) =>
+builder.Services.AddControllers();
+builder.Services.AddCors(o => o.AddPolicy("Default", policyBuilder =>
 {
-    proxyConfigProvider.Refresh();
-    return Results.Text("Config refreshed!");
-});
+    policyBuilder
+        .AllowCredentials()
+        .WithOrigins("http://localhost:3000")
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+}));
+
+
+var app = builder.Build();
+app.UseCors("Default");
+app.MapControllers();
 app.MapReverseProxy();
 app.Run();
