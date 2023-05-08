@@ -11,11 +11,11 @@ public class CustomProxyConfigProvider : IProxyConfigProvider
 
     private CancellationTokenSource? _tokenSource;
 
-    private readonly IServiceScopeFactory _scopeFactory;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public CustomProxyConfigProvider(IServiceScopeFactory scopeFactory, ILogger<CustomProxyConfigProvider> logger)
+    public CustomProxyConfigProvider(IServiceScopeFactory serviceScopeFactory, ILogger<CustomProxyConfigProvider> logger)
     {
-        _scopeFactory = scopeFactory;
+        _serviceScopeFactory = serviceScopeFactory;
         _logger = logger;
     }
 
@@ -28,12 +28,13 @@ public class CustomProxyConfigProvider : IProxyConfigProvider
     {
         _logger.LogDebug("GetConfig is called");
 
-        using var scope = _scopeFactory.CreateScope();
+        using var scope = _serviceScopeFactory.CreateScope();
 
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
         var clusters = dbContext.Clusters
             .Include(cluster => cluster.Destinations)
+            .Where(cluster => cluster.Enabled)
             .ToList()
             .Select(cluster => new ClusterConfig
             {
@@ -46,6 +47,7 @@ public class CustomProxyConfigProvider : IProxyConfigProvider
             }).ToArray();
 
         var routes = dbContext.Routes
+            .Where(route => route.Enabled)
             .Select(route => new RouteConfig
             {
                 RouteId = route.Id,

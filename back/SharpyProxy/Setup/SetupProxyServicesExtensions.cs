@@ -15,7 +15,9 @@ public static class SetupProxyServicesExtensions
             .AddReverseProxy();
 
         services.AddScoped<RouteService>()
-            .AddScoped<ClusterService>();
+            .AddScoped<ClusterService>()
+            .AddScoped<CertificateService>()
+            .AddSingleton<CertificateStore>();
         
         return builder;
     }

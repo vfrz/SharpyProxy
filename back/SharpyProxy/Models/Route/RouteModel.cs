@@ -9,4 +9,6 @@ public class RouteModel
     public string[] MatchHosts { get; set; }
     
     public string ClusterId { get; set; }
+    
+    public bool Enabled { get; set; }
 }

@@ -7,4 +7,6 @@ public class ClusterModel
     public string Id { get; set; }
     
     public ClusterDestinationModel[] Destinations { get; set; }
+    
+    public bool Enabled { get; set; }
 }

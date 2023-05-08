@@ -24,7 +24,8 @@ public class RouteService
             Id = model.Id,
             MatchPath = model.MatchPath,
             MatchHosts = model.MatchHosts.ToList(),
-            ClusterId = model.ClusterId
+            ClusterId = model.ClusterId,
+            Enabled = true
         };
 
         await _appDbContext.AddAsync(route);
@@ -54,14 +55,15 @@ public class RouteService
             .FirstOrDefaultAsync(route => route.Id == id);
 
         if (route is null)
-            throw new Exception();
+            throw new Exception($"No route found with id: {id}");
 
         var model = new RouteModel
         {
             Id = route.Id,
             ClusterId = route.ClusterId,
             MatchHosts = route.MatchHosts.ToArray(),
-            MatchPath = route.MatchPath
+            MatchPath = route.MatchPath,
+            Enabled = route.Enabled
         };
 
         return model;
@@ -77,7 +79,8 @@ public class RouteService
             Id = route.Id,
             ClusterId = route.ClusterId,
             MatchHosts = route.MatchHosts.ToArray(),
-            MatchPath = route.MatchPath
+            MatchPath = route.MatchPath,
+            Enabled = route.Enabled
         }).ToArray();
 
         return models;

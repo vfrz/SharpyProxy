@@ -18,11 +18,12 @@ public class ClusterService
         _proxyConfigProvider = proxyConfigProvider;
     }
 
-    public async Task<string> CreateAsync(CreateClusterModel model)
+    public async Task CreateAsync(CreateClusterModel model)
     {
         var cluster = new ClusterEntity
         {
             Id = model.Id,
+            Enabled = true,
             Destinations = model.Destinations.Select(destination => new ClusterDestinationEntity
             {
                 Id = destination.Id,
@@ -34,8 +35,6 @@ public class ClusterService
         await _appDbContext.SaveChangesAsync();
 
         _proxyConfigProvider.Refresh();
-
-        return cluster.Id;
     }
 
     public async Task<bool> DeleteAsync(string id)
@@ -58,11 +57,12 @@ public class ClusterService
             .FirstOrDefaultAsync(cluster => cluster.Id == id);
 
         if (cluster is null)
-            throw new Exception();
+            throw new Exception($"No cluster found with id: {id}");
 
         var model = new ClusterModel
         {
             Id = cluster.Id,
+            Enabled = cluster.Enabled,
             Destinations = cluster.Destinations.Select(destination => new ClusterDestinationModel
             {
                 Id = destination.Id,
@@ -82,6 +82,7 @@ public class ClusterService
         var models = clusters.Select(cluster => new ClusterModel
         {
             Id = cluster.Id,
+            Enabled = cluster.Enabled,
             Destinations = cluster.Destinations.Select(destination => new ClusterDestinationModel
             {
                 Id = destination.Id,
@@ -90,5 +91,17 @@ public class ClusterService
         }).ToArray();
 
         return models;
+    }
+
+    public async Task SetEnabledAsync(string id, bool enabled)
+    {
+        var cluster = await _appDbContext.Clusters
+            .FirstOrDefaultAsync(cluster => cluster.Id == id);
+        
+        if (cluster is null)
+            throw new Exception($"No cluster found with id: {id}");
+        
+        cluster.Enabled = enabled;
+        await _appDbContext.SaveChangesAsync();
     }
 }

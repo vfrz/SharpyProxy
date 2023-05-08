@@ -8,10 +8,10 @@ namespace SharpyProxy.Controllers;
 public class ClustersController : ControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult<string>> Create([FromBody] CreateClusterModel model, [FromServices] ClusterService clusterService)
+    public async Task<ActionResult> Create([FromBody] CreateClusterModel model, [FromServices] ClusterService clusterService)
     {
-        var id = await clusterService.CreateAsync(model);
-        return Ok(id);
+        await clusterService.CreateAsync(model);
+        return Ok();
     }
 
     [HttpDelete("{clusterId}")]
@@ -33,5 +33,19 @@ public class ClustersController : ControllerBase
     {
         var models = await clusterService.ListAsync();
         return Ok(models);
+    }
+
+    [HttpPatch("{clusterId}/enable")]
+    public async Task<ActionResult> Enable([FromRoute] string clusterId, [FromServices] ClusterService clusterService)
+    {
+        await clusterService.SetEnabledAsync(clusterId, true);
+        return Ok();
+    }
+    
+    [HttpPatch("{clusterId}/disable")]
+    public async Task<ActionResult> Disable([FromRoute] string clusterId, [FromServices] ClusterService clusterService)
+    {
+        await clusterService.SetEnabledAsync(clusterId, false);
+        return Ok();
     }
 }

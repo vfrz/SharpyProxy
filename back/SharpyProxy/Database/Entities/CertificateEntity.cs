@@ -4,16 +4,14 @@ using SharpyProxy.Database.Tracking;
 
 namespace SharpyProxy.Database.Entities;
 
-[EntityTypeConfiguration(typeof(ClusterEntityConfiguration))]
-public class ClusterEntity : ITrackedEntity
+[EntityTypeConfiguration(typeof(CertificateEntityConfiguration))]
+public class CertificateEntity : ITrackedEntity
 {
     public string Id { get; set; }
 
-    public List<RouteEntity> Routes { get; set; }
+    public string Pem { get; set; }
 
-    public List<ClusterDestinationEntity> Destinations { get; set; }
-
-    public bool Enabled { get; set; }
+    public string Key { get; set; }
 
     public DateTime CreatedDateUtc { get; set; }
 
