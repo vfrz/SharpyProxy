@@ -15,6 +15,7 @@
             </div>
             <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
                 <button type="button"
+                        @click="openCreationModal"
                         class="inline-flex items-center justify-center rounded-md border border-transparent bg-primary-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-600 sm:w-auto">
                     Add cluster
                 </button>
@@ -66,16 +67,104 @@
             </div>
         </div>
     </Container>
+
+    <TransitionRoot
+            :show="createModalOpen"
+            as="template"
+            enter="duration-200 ease-out"
+            enter-from="opacity-0"
+            enter-to="opacity-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100"
+            leave-to="opacity-0">
+        <Dialog :static="true" class="relative z-40">
+            <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
+                             leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
+                <DialogOverlay class="fixed inset-0 bg-slate-800 bg-opacity-80 transition-opacity"/>
+            </TransitionChild>
+
+            <div class="fixed inset-0 flex justify-center p-4">
+                <DialogPanel class="relative w-full h-fit p-4 max-w-xl rounded-lg bg-white">
+                    <div class="absolute top-0 right-0 pt-5 pr-4">
+                        <button type="button" class="text-slate-800 hover:text-slate-600 !outline-none"
+                                @click="closeCreationModal">
+                            <span class="sr-only">Close</span>
+                            <i class="bx bx-x text-2xl"></i>
+                        </button>
+                    </div>
+
+                    <h2 class="text-xl font-bold flex items-center text-slate-800">
+                        Create new cluster
+                    </h2>
+
+                    <form @submit.prevent="createCluster">
+
+                        <div class="block text-sm font-medium text-gray-700 mt-2">
+                            Cluster id
+                        </div>
+                        <input type="text"
+                               v-model="createModel.id"
+                               placeholder="Identifier"
+                               class="shadow-sm mt-2 focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"/>
+                        <div class="block text-sm font-medium text-gray-700 mt-2">
+                            Destinations
+                        </div>
+                        <div v-for="(destination, index) in createModel.destinations"
+                             class="flex items-center gap-x-2 mt-2">
+                            <div class="grow-0">
+                                <input type="text"
+                                       v-model="destination.id"
+                                       placeholder="Identifier"
+                                       class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"/>
+                            </div>
+                            <div class="grow">
+                                <input type="text"
+                                       v-model="destination.address"
+                                       placeholder="Address"
+                                       class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"/>
+                            </div>
+                            <div v-if="index == 0" class="grow-0 align-middle justify-center">
+                                <i @click="createModel.destinations.push(new CreateClusterDestinationModel())"
+                                   class="bx bx-plus-circle text-2xl text-primary-500 cursor-pointer"></i>
+                            </div>
+                            <div v-else class="grow-0 align-middle justify-center">
+                                <i @click="createModel.destinations.splice(createModel.destinations.indexOf(destination), 1)"
+                                   class="bx bx-minus-circle text-2xl text-red-500 cursor-pointer"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <button type="submit"
+                                    class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                Create
+                            </button>
+                        </div>
+                    </form>
+                </DialogPanel>
+            </div>
+        </Dialog>
+    </TransitionRoot>
 </template>
 
 <script setup lang="ts">
 import ClusterModel from "~/models/cluster/ClusterModel";
 import {Ref} from "vue";
 import EnabledTag from "~/components/EnabledTag.vue";
+import {
+    Dialog,
+    DialogPanel,
+    DialogOverlay,
+    TransitionChild,
+    TransitionRoot,
+} from "@headlessui/vue";
+import CreateClusterModel from "~/models/cluster/CreateClusterModel";
+import CreateClusterDestinationModel from "~/models/cluster/destination/CreateClusterDestinationModel";
 
 const httpClient = useClustersHttpClient();
 
 const clusters: Ref<ClusterModel[]> = ref();
+
+const createModalOpen: Ref<boolean> = ref(false);
+const createModel: Ref<CreateClusterModel> = ref();
 
 onNuxtReady(async () => {
     await reloadClusters();
@@ -83,6 +172,23 @@ onNuxtReady(async () => {
 
 async function reloadClusters() {
     clusters.value = await httpClient.list();
+}
+
+async function createCluster() {
+    await httpClient.create(createModel.value);
+    closeCreationModal();
+    await reloadClusters();
+}
+
+function openCreationModal() {
+    let model = new CreateClusterModel();
+    model.destinations.push(new CreateClusterDestinationModel());
+    createModel.value = model;
+    createModalOpen.value = true;
+}
+
+function closeCreationModal() {
+    createModalOpen.value = false;
 }
 
 </script>

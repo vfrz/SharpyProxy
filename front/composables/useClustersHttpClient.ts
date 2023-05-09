@@ -12,7 +12,7 @@ export default function () {
     const create = async (model: CreateClusterModel): Promise<string> => {
         return await httpClient<string>("/clusters", {
             method: "post",
-            body: model
+            body: JSON.stringify(model)
         })
     }
     

@@ -1,6 +1,6 @@
 import CreateClusterDestinationModel from "~/models/cluster/destination/CreateClusterDestinationModel";
 
-export default interface CreateClusterModel {
-    id: string,
-    destinations: CreateClusterDestinationModel[]
+export default class CreateClusterModel {
+    public id: string = "";
+    public destinations: CreateClusterDestinationModel[] = [];
 }
