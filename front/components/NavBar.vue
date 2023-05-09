@@ -1,6 +1,6 @@
 <template>
     <Disclosure as="nav" class="bg-slate-800" v-slot="{ open }">
-        <div class="max-w-7xl mx-auto px-4 mb-4">
+        <Container class="mb-4">
             <div class="relative flex items-center justify-between h-16">
                 <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
                     <DisclosureButton
@@ -28,7 +28,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </Container>
         <DisclosurePanel class="sm:hidden">
             <div class="px-2 pt-2 pb-3 space-y-1">
                 <NuxtLink v-for="page in pages"

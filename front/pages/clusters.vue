@@ -3,7 +3,12 @@
     <Container>
         <div class="sm:flex sm:items-center">
             <div class="sm:flex-auto">
-                <h1 class="text-xl font-semibold text-slate-900">Clusters</h1>
+                <h1 class="text-xl font-semibold text-slate-900">
+                    Clusters
+                    <template v-if="clusters">
+                        ({{ clusters.length }})
+                    </template>
+                </h1>
                 <p class="mt-2 text-sm text-gray-700">
                     A list of all the clusters on your SharpyProxy instance.
                 </p>

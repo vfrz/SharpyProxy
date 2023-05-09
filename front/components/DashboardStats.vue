@@ -1,23 +1,16 @@
 <template>
     <div>
         <dl class="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-3">
-            <div v-for="item in stats" :key="item.name"
-                 class="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
-                <dt class="text-sm font-medium text-slate-500 truncate">
-                    {{ item.name }}
-                </dt>
-                <dd class="mt-1 text-3xl font-semibold text-slate-900">
-                    {{ item.stat }}
-                </dd>
-            </div>
+            <StatCard title="Clusters" :value="stats.clusterCount.toString()"/>
+            <StatCard title="Routes" :value="stats.routeCount.toString()"/>
+            <StatCard title="Certificates" :value="stats.certificateCount.toString()"/>
         </dl>
     </div>
 </template>
 
 <script setup lang="ts">
-const stats = [
-    {name: 'Clusters', stat: '42'},
-    {name: 'Routes', stat: '34'},
-    {name: 'Certificates', stat: '16'},
-]
+import StatCard from "~/components/StatCard.vue";
+
+const coreHttpClient = useCoreHttpClient();
+const stats = await coreHttpClient.getStats();
 </script>

@@ -3,7 +3,12 @@
     <Container>
         <div class="sm:flex sm:items-center">
             <div class="sm:flex-auto">
-                <h1 class="text-xl font-semibold text-slate-900">Certificates</h1>
+                <h1 class="text-xl font-semibold text-slate-900">
+                    Certificates
+                    <template v-if="certificates">
+                        ({{ certificates.length }})
+                    </template>
+                </h1>
                 <p class="mt-2 text-sm text-gray-700">
                     A list of all the certificates on your SharpyProxy instance.
                 </p>
