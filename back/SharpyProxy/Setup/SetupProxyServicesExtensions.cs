@@ -17,6 +17,7 @@ public static class SetupProxyServicesExtensions
         services.AddScoped<RouteService>()
             .AddScoped<ClusterService>()
             .AddScoped<CertificateService>()
+            .AddScoped<CoreService>()
             .AddSingleton<CertificateStore>();
         
         return builder;
