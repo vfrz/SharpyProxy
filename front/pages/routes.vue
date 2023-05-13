@@ -49,7 +49,7 @@
                                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6 font-medium" :title="route.id">
                                     {{ route.name }}
                                 </td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500" :title="route.clusterId">
                                     {{ route.clusterName }}
                                 </td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">

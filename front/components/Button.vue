@@ -1,5 +1,5 @@
 <template>
-    <button :class="['py-2 px-4 shadow-sm text-sm font-medium rounded-md border', classes]">
+    <button :class="['py-2 px-4 shadow-sm text-sm font-bold rounded-md border', classes]">
         <slot></slot>
     </button>
 </template>

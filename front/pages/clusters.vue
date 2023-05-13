@@ -39,7 +39,7 @@
                             </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200 bg-white">
-                            <tr v-for="cluster in clusters" :key="cluster.id">
+                            <tr v-for="cluster in clusters?.sort()" :key="cluster.id">
                                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6 font-medium" :title="cluster.id">
                                     {{ cluster.name }}
                                 </td>
@@ -80,29 +80,28 @@
 
             <div class="fixed inset-0 flex justify-center mt-8">
                 <DialogPanel class="relative w-full h-fit p-4 max-w-xl rounded-lg bg-white">
-
-                    <h2 class="text-xl font-bold flex items-center text-slate-800">
+                    <h2 class="text-xl font-bold text-slate-800 text-center">
                         Create new cluster
                     </h2>
-
+                    <Separator/>
                     <form v-if="createModel" @submit.prevent="createCluster">
-                        <div class="block text-sm font-medium text-slate-700 mt-2">
+                        <div class="block text-sm font-semibold text-slate-700">
                             Cluster name
                         </div>
-                        <div class="flex gap-x-2 items-center mt-2">
+                        <div class="flex gap-x-4 items-center mt-2">
                             <div class="grow">
                                 <input type="text"
                                        v-model="createModel.name"
-                                       placeholder="Identifier"
+                                       placeholder="Name (eg: cluster-1)"
                                        class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"/>
                             </div>
-                            <div class="grow-0 align-middle">
-                                <Toggle v-model="createModel.enabled" class="text-sm font-medium text-slate-700">
-                                    Enabled
-                                </Toggle>
-                            </div>
                         </div>
-                        <div class="block text-sm font-medium text-slate-700 mt-2">
+                        <div class="mt-2 align-middle">
+                            <Toggle v-model="createModel.enabled" class="text-sm font-semibold text-slate-700">
+                                Enabled
+                            </Toggle>
+                        </div>
+                        <div class="block text-sm font-semibold text-slate-700 mt-2">
                             Destinations
                         </div>
                         <div v-for="(destination, index) in createModel.destinations"
@@ -111,13 +110,13 @@
                             <div class="grow-0">
                                 <input type="text"
                                        v-model="destination.name"
-                                       placeholder="Name"
+                                       placeholder="Name (eg: dest-1)"
                                        class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"/>
                             </div>
                             <div class="grow">
                                 <input type="text"
                                        v-model="destination.address"
-                                       placeholder="Address"
+                                       placeholder="Address (eg: http://localhost:3000)"
                                        class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"/>
                             </div>
                             <div v-if="index == 0" class="grow-0 flex">
@@ -134,10 +133,10 @@
                             </div>
                         </div>
                         <div class="flex mt-4 gap-x-2">
-                            <Button type="submit">
+                            <Button type="submit" class="grow">
                                 Create
                             </Button>
-                            <Button type="button" @click="closeCreationModal" :style="ButtonStyle.RedOutline">
+                            <Button type="button" class="grow" @click="closeCreationModal" :style="ButtonStyle.RedOutline">
                                 Cancel
                             </Button>
                         </div>
