@@ -7,13 +7,15 @@ namespace SharpyProxy.Database.Entities;
 [EntityTypeConfiguration(typeof(RouteEntityConfiguration))]
 public class RouteEntity : ITrackedEntity
 {
-    public string Id { get; set; }
+    public Guid Id { get; set; }
+    
+    public string Name { get; set; }
 
     public string? MatchPath { get; set; }
 
     public List<string> MatchHosts { get; set; }
 
-    public string ClusterId { get; set; }
+    public Guid ClusterId { get; set; }
 
     public ClusterEntity Cluster { get; set; }
 

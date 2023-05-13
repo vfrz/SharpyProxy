@@ -38,8 +38,8 @@ public class CustomProxyConfigProvider : IProxyConfigProvider
             .ToList()
             .Select(cluster => new ClusterConfig
             {
-                ClusterId = cluster.Id,
-                Destinations = cluster.Destinations.ToDictionary(destination => destination.Id,
+                ClusterId = cluster.Name,
+                Destinations = cluster.Destinations.ToDictionary(destination => destination.Name,
                     destination => new DestinationConfig
                     {
                         Address = destination.Address
@@ -50,12 +50,12 @@ public class CustomProxyConfigProvider : IProxyConfigProvider
             .Where(route => route.Enabled)
             .Select(route => new RouteConfig
             {
-                RouteId = route.Id,
+                RouteId = route.Name,
                 Match = new RouteMatch
                 {
                     Hosts = route.MatchHosts
                 },
-                ClusterId = route.ClusterId
+                ClusterId = route.Cluster.Name
             })
             .ToArray();
 

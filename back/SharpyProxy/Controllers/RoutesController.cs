@@ -14,15 +14,15 @@ public class RoutesController : ControllerBase
         return Ok(id);
     }
 
-    [HttpDelete("{routeId}")]
-    public async Task<ActionResult> Delete([FromRoute] string routeId, [FromServices] RouteService routeService)
+    [HttpDelete("{routeId:guid}")]
+    public async Task<ActionResult> Delete([FromRoute] Guid routeId, [FromServices] RouteService routeService)
     {
         await routeService.DeleteAsync(routeId);
         return Ok();
     }
 
-    [HttpGet("{routeId}")]
-    public async Task<ActionResult<RouteModel>> Get([FromRoute] string routeId, [FromServices] RouteService routeService)
+    [HttpGet("{routeId:guid}")]
+    public async Task<ActionResult<RouteModel>> Get([FromRoute] Guid routeId, [FromServices] RouteService routeService)
     {
         var model = await routeService.GetAsync(routeId);
         return Ok(model);

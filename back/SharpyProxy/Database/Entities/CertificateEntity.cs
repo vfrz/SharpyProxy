@@ -7,7 +7,9 @@ namespace SharpyProxy.Database.Entities;
 [EntityTypeConfiguration(typeof(CertificateEntityConfiguration))]
 public class CertificateEntity : ITrackedEntity
 {
-    public string Id { get; set; }
+    public Guid Id { get; set; }
+    
+    public string Name { get; set; }
 
     public string Pem { get; set; }
 

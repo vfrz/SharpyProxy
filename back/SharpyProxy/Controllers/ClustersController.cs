@@ -14,15 +14,15 @@ public class ClustersController : ControllerBase
         return Ok();
     }
 
-    [HttpDelete("{clusterId}")]
-    public async Task<ActionResult> Delete([FromRoute] string clusterId, [FromServices] ClusterService clusterService)
+    [HttpDelete("{clusterId:guid}")]
+    public async Task<ActionResult> Delete([FromRoute] Guid clusterId, [FromServices] ClusterService clusterService)
     {
         await clusterService.DeleteAsync(clusterId);
         return Ok();
     }
 
-    [HttpGet("{clusterId}")]
-    public async Task<ActionResult<ClusterModel>> Get([FromRoute] string clusterId, [FromServices] ClusterService clusterService)
+    [HttpGet("{clusterId:guid}")]
+    public async Task<ActionResult<ClusterModel>> Get([FromRoute] Guid clusterId, [FromServices] ClusterService clusterService)
     {
         var model = await clusterService.GetAsync(clusterId);
         return Ok(model);
@@ -35,15 +35,15 @@ public class ClustersController : ControllerBase
         return Ok(models);
     }
 
-    [HttpPatch("{clusterId}/enable")]
-    public async Task<ActionResult> Enable([FromRoute] string clusterId, [FromServices] ClusterService clusterService)
+    [HttpPatch("{clusterId:guid}/enable")]
+    public async Task<ActionResult> Enable([FromRoute] Guid clusterId, [FromServices] ClusterService clusterService)
     {
         await clusterService.SetEnabledAsync(clusterId, true);
         return Ok();
     }
     
-    [HttpPatch("{clusterId}/disable")]
-    public async Task<ActionResult> Disable([FromRoute] string clusterId, [FromServices] ClusterService clusterService)
+    [HttpPatch("{clusterId:guid}/disable")]
+    public async Task<ActionResult> Disable([FromRoute] Guid clusterId, [FromServices] ClusterService clusterService)
     {
         await clusterService.SetEnabledAsync(clusterId, false);
         return Ok();

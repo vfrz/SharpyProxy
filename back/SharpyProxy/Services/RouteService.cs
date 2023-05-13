@@ -17,11 +17,11 @@ public class RouteService
         _proxyConfigProvider = proxyConfigProvider;
     }
 
-    public async Task<string> CreateAsync(CreateRouteModel model)
+    public async Task<Guid> CreateAsync(CreateRouteModel model)
     {
         var route = new RouteEntity
         {
-            Id = model.Id,
+            Name = model.Name,
             MatchPath = model.MatchPath,
             MatchHosts = model.MatchHosts.ToList(),
             ClusterId = model.ClusterId,
@@ -36,7 +36,7 @@ public class RouteService
         return route.Id;
     }
     
-    public async Task<bool> DeleteAsync(string id)
+    public async Task<bool> DeleteAsync(Guid id)
     {
         var deleted = await _appDbContext.Routes
             .Where(route => route.Id == id)
@@ -49,7 +49,7 @@ public class RouteService
         return true;
     }
 
-    public async Task<RouteModel> GetAsync(string id)
+    public async Task<RouteModel> GetAsync(Guid id)
     {
         var route = await _appDbContext.Routes
             .FirstOrDefaultAsync(route => route.Id == id);
@@ -60,6 +60,7 @@ public class RouteService
         var model = new RouteModel
         {
             Id = route.Id,
+            Name = route.Name,
             ClusterId = route.ClusterId,
             MatchHosts = route.MatchHosts.ToArray(),
             MatchPath = route.MatchPath,
@@ -77,6 +78,7 @@ public class RouteService
         var models = routes.Select(route => new RouteModel
         {
             Id = route.Id,
+            Name = route.Name,
             ClusterId = route.ClusterId,
             MatchHosts = route.MatchHosts.ToArray(),
             MatchPath = route.MatchPath,

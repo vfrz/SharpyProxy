@@ -4,7 +4,9 @@ namespace SharpyProxy.Models.Cluster;
 
 public class ClusterModel
 {
-    public string Id { get; set; }
+    public Guid Id { get; set; }
+    
+    public string Name { get; set; }
     
     public ClusterDestinationModel[] Destinations { get; set; }
     

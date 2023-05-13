@@ -14,8 +14,8 @@ public class CertificatesController : ControllerBase
         return Ok();
     }
 
-    [HttpDelete("{certificateId}")]
-    public async Task<ActionResult> Delete([FromRoute] string certificateId, [FromServices] CertificateService certificateService)
+    [HttpDelete("{certificateId:guid}")]
+    public async Task<ActionResult> Delete([FromRoute] Guid certificateId, [FromServices] CertificateService certificateService)
     {
         await certificateService.DeleteAsync(certificateId);
         return Ok();

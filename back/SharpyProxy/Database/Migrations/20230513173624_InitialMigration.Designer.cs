@@ -13,8 +13,8 @@ using SharpyProxy.Database;
 namespace SharpyProxy.Database.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230508190459_CreateCertificatesTable")]
-    partial class CreateCertificatesTable
+    [Migration("20230513173624_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,13 +28,18 @@ namespace SharpyProxy.Database.Migrations
 
             modelBuilder.Entity("SharpyProxy.Database.Entities.CertificateEntity", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedDateUtc")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -52,17 +57,22 @@ namespace SharpyProxy.Database.Migrations
 
             modelBuilder.Entity("SharpyProxy.Database.Entities.ClusterDestinationEntity", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ClusterId")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id", "ClusterId");
+                    b.Property<Guid>("ClusterId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("ClusterId");
 
@@ -71,14 +81,19 @@ namespace SharpyProxy.Database.Migrations
 
             modelBuilder.Entity("SharpyProxy.Database.Entities.ClusterEntity", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedDateUtc")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("Enabled")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedDateUtc")
                         .HasColumnType("timestamp with time zone");
@@ -90,12 +105,12 @@ namespace SharpyProxy.Database.Migrations
 
             modelBuilder.Entity("SharpyProxy.Database.Entities.RouteEntity", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
-                    b.Property<string>("ClusterId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("ClusterId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedDateUtc")
                         .HasColumnType("timestamp with time zone");
@@ -108,6 +123,10 @@ namespace SharpyProxy.Database.Migrations
                         .HasColumnType("text[]");
 
                     b.Property<string>("MatchPath")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedDateUtc")

@@ -19,11 +19,11 @@ public class CertificateService
         _appDbContext = appDbContext;
     }
 
-    public async Task UploadAsync(UploadCertificateModel model)
+    public async Task<Guid> UploadAsync(UploadCertificateModel model)
     {
         var entity = new CertificateEntity
         {
-            Id = model.Id,
+            Name = model.Name,
             Pem = model.Pem,
             Key = model.Key
         };
@@ -32,9 +32,11 @@ public class CertificateService
         await _appDbContext.SaveChangesAsync();
 
         await _certificateStore.ReloadCertificatesAsync();
+
+        return entity.Id;
     }
 
-    public async Task DeleteAsync(string id)
+    public async Task DeleteAsync(Guid id)
     {
         var deleted = await _appDbContext.Certificates
             .Where(certificate => certificate.Id == id)
@@ -53,6 +55,7 @@ public class CertificateService
             return new ListCertificateModel
             {
                 Id = entity.Id,
+                Name = entity.Name,
                 Domain = certificate.GetDomain(),
                 Expiration = certificate.GetExpiration()
             };

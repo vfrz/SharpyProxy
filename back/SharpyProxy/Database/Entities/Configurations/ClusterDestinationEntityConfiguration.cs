@@ -7,11 +7,13 @@ public class ClusterDestinationEntityConfiguration : IEntityTypeConfiguration<Cl
 {
     public void Configure(EntityTypeBuilder<ClusterDestinationEntity> builder)
     {
-        builder.HasKey(destination => new
-        {
-            destination.Id,
-            destination.ClusterId
-        });
+        builder.HasKey(destination => destination.Id);
+
+        builder.HasIndex(destination => destination.Name)
+            .IsUnique();
+        
+        builder.Property(destination => destination.Name)
+            .IsRequired();
 
         builder.HasOne(destination => destination.Cluster)
             .WithMany(cluster => cluster.Destinations)

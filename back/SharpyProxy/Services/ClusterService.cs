@@ -18,15 +18,15 @@ public class ClusterService
         _proxyConfigProvider = proxyConfigProvider;
     }
 
-    public async Task CreateAsync(CreateClusterModel model)
+    public async Task<Guid> CreateAsync(CreateClusterModel model)
     {
         var cluster = new ClusterEntity
         {
-            Id = model.Id,
+            Name = model.Name,
             Enabled = model.Enabled,
             Destinations = model.Destinations.Select(destination => new ClusterDestinationEntity
             {
-                Id = destination.Id,
+                Name = destination.Name,
                 Address = destination.Address
             }).ToList()
         };
@@ -35,9 +35,11 @@ public class ClusterService
         await _appDbContext.SaveChangesAsync();
 
         _proxyConfigProvider.Refresh();
+
+        return cluster.Id;
     }
 
-    public async Task<bool> DeleteAsync(string id)
+    public async Task<bool> DeleteAsync(Guid id)
     {
         var deleted = await _appDbContext.Clusters
             .Where(cluster => cluster.Id == id)
@@ -50,7 +52,7 @@ public class ClusterService
         return true;
     }
 
-    public async Task<ClusterModel> GetAsync(string id)
+    public async Task<ClusterModel> GetAsync(Guid id)
     {
         var cluster = await _appDbContext.Clusters
             .Include(cluster => cluster.Destinations)
@@ -62,6 +64,7 @@ public class ClusterService
         var model = new ClusterModel
         {
             Id = cluster.Id,
+            Name = cluster.Name,
             Enabled = cluster.Enabled,
             Destinations = cluster.Destinations.Select(destination => new ClusterDestinationModel
             {
@@ -82,10 +85,12 @@ public class ClusterService
         var models = clusters.Select(cluster => new ClusterModel
         {
             Id = cluster.Id,
+            Name = cluster.Name,
             Enabled = cluster.Enabled,
             Destinations = cluster.Destinations.Select(destination => new ClusterDestinationModel
             {
                 Id = destination.Id,
+                Name = destination.Name,
                 Address = destination.Address
             }).ToArray()
         }).ToArray();
@@ -93,7 +98,7 @@ public class ClusterService
         return models;
     }
 
-    public async Task SetEnabledAsync(string id, bool enabled)
+    public async Task SetEnabledAsync(Guid id, bool enabled)
     {
         var cluster = await _appDbContext.Clusters
             .FirstOrDefaultAsync(cluster => cluster.Id == id);

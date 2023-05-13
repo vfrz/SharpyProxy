@@ -8,5 +8,17 @@ public class CertificateEntityConfiguration : IEntityTypeConfiguration<Certifica
     public void Configure(EntityTypeBuilder<CertificateEntity> builder)
     {
         builder.HasKey(certificate => certificate.Id);
+
+        builder.HasIndex(certificate => certificate.Name)
+            .IsUnique();
+
+        builder.Property(certificate => certificate.Name)
+            .IsRequired();
+
+        builder.Property(certificate => certificate.Pem)
+            .IsRequired();
+
+        builder.Property(certificate => certificate.Key)
+            .IsRequired();
     }
 }
