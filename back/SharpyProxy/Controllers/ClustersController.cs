@@ -14,6 +14,12 @@ public class ClustersController : ControllerBase
         return id;
     }
 
+    [HttpPut]
+    public async Task Update([FromBody] UpdateClusterModel model, [FromServices] ClusterService clusterService)
+    {
+        await clusterService.UpdateAsync(model);
+    }
+
     [HttpDelete("{clusterId:guid}")]
     public async Task Delete([FromRoute] Guid clusterId, [FromServices] ClusterService clusterService)
     {

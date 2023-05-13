@@ -39,6 +39,24 @@ public class ClusterService
         return cluster.Id;
     }
 
+    public async Task UpdateAsync(UpdateClusterModel model)
+    {
+        var entity = await _appDbContext.Clusters
+            .Include(cluster => cluster.Destinations)
+            .FirstAsync(cluster => cluster.Id == model.Id);
+
+        entity.Name = model.Name;
+        entity.Enabled = model.Enabled;
+        entity.Destinations = model.Destinations.Select(destination => new ClusterDestinationEntity
+        {
+            Id = destination.Id ?? default,
+            Name = destination.Name,
+            Address = destination.Address
+        }).ToList();
+
+        await _appDbContext.SaveChangesAsync();
+    }
+
     public async Task<bool> DeleteAsync(Guid id)
     {
         var deleted = await _appDbContext.Clusters
