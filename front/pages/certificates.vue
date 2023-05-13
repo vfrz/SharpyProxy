@@ -25,7 +25,7 @@
                             <tr>
                                 <th scope="col"
                                     class="py-3.5 px-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-                                    Id
+                                    Name
                                 </th>
                                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                                     Domain
@@ -40,8 +40,8 @@
                             </thead>
                             <tbody class="divide-y divide-gray-200 bg-white">
                             <tr v-for="certificate in certificates" :key="certificate.id">
-                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6 font-medium">
-                                    {{ certificate.id }}
+                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6 font-medium" :title="certificates.id">
+                                    {{ certificate.name }}
                                 </td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                     {{ certificate.domain }}

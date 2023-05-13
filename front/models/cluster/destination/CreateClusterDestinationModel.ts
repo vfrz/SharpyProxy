@@ -1,4 +1,4 @@
 export default class CreateClusterDestinationModel {
-    public id: string = "";
+    public name: string = "";
     public address: string = "";
 }

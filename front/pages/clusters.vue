@@ -25,7 +25,7 @@
                             <tr>
                                 <th scope="col"
                                     class="py-3.5 px-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-                                    Id
+                                    Name
                                 </th>
                                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                                     Destinations
@@ -40,8 +40,8 @@
                             </thead>
                             <tbody class="divide-y divide-gray-200 bg-white">
                             <tr v-for="cluster in clusters" :key="cluster.id">
-                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6 font-medium">
-                                    {{ cluster.id }}
+                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6 font-medium" :title="cluster.id">
+                                    {{ cluster.name }}
                                 </td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                     {{ cluster.destinations }}
@@ -87,12 +87,12 @@
 
                     <form v-if="createModel" @submit.prevent="createCluster">
                         <div class="block text-sm font-medium text-slate-700 mt-2">
-                            Cluster id
+                            Cluster name
                         </div>
                         <div class="flex gap-x-2 items-center mt-2">
                             <div class="grow">
                                 <input type="text"
-                                       v-model="createModel.id"
+                                       v-model="createModel.name"
                                        placeholder="Identifier"
                                        class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"/>
                             </div>
@@ -110,8 +110,8 @@
                              class="flex items-center gap-x-2 mt-2">
                             <div class="grow-0">
                                 <input type="text"
-                                       v-model="destination.id"
-                                       placeholder="Identifier"
+                                       v-model="destination.name"
+                                       placeholder="Name"
                                        class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"/>
                             </div>
                             <div class="grow">
