@@ -23,7 +23,7 @@ public class ClusterService
         var cluster = new ClusterEntity
         {
             Id = model.Id,
-            Enabled = true,
+            Enabled = model.Enabled,
             Destinations = model.Destinations.Select(destination => new ClusterDestinationEntity
             {
                 Id = destination.Id,
