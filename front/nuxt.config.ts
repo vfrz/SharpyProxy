@@ -18,6 +18,7 @@ export default defineNuxtConfig({
     },
     runtimeConfig: {
         public: {
+            version: "0.1.0",
             apiBaseUrl: 'http://localhost:8080/.proxy-api'
         }
     },

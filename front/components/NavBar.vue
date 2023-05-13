@@ -12,7 +12,7 @@
                 </div>
                 <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
                     <NuxtLink to="/"
-                              class="flex-shrink-0 flex items-center font-extrabold text-xl text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-cyan-500">
+                              class="flex-shrink-0 flex items-center font-extrabold text-xl text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-primary-500">
                         SharpyProxy
                     </NuxtLink>
                     <div class="hidden sm:block sm:ml-6">

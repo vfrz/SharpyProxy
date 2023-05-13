@@ -13,7 +13,7 @@ export default <Partial<Config>>{
                 serif: ['Manrope', 'serif']
             },
             colors: {
-                primary: colors.cyan
+                primary: colors.sky
             }
         }
     },
