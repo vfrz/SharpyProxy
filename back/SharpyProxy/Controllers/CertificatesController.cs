@@ -8,23 +8,22 @@ namespace SharpyProxy.Controllers;
 public class CertificatesController : ControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult<string>> Upload([FromBody] UploadCertificateModel model, [FromServices] CertificateService certificateService)
+    public async Task<Guid> Upload([FromBody] UploadCertificateModel model, [FromServices] CertificateService certificateService)
     {
-        await certificateService.UploadAsync(model);
-        return Ok();
+        var id = await certificateService.UploadAsync(model);
+        return id;
     }
 
     [HttpDelete("{certificateId:guid}")]
-    public async Task<ActionResult> Delete([FromRoute] Guid certificateId, [FromServices] CertificateService certificateService)
+    public async Task Delete([FromRoute] Guid certificateId, [FromServices] CertificateService certificateService)
     {
         await certificateService.DeleteAsync(certificateId);
-        return Ok();
     }
 
     [HttpGet]
-    public async Task<ActionResult<ListCertificateModel[]>> List([FromServices] CertificateService certificateService)
+    public async Task<ListCertificateModel[]> List([FromServices] CertificateService certificateService)
     {
         var models = await certificateService.ListAsync();
-        return Ok(models);
+        return models;
     }
 }

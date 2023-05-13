@@ -32,10 +32,10 @@ public class RouteService
         await _appDbContext.SaveChangesAsync();
 
         _proxyConfigProvider.Refresh();
-        
+
         return route.Id;
     }
-    
+
     public async Task<bool> DeleteAsync(Guid id)
     {
         var deleted = await _appDbContext.Routes
@@ -69,22 +69,21 @@ public class RouteService
 
         return model;
     }
-    
-    public async Task<RouteModel[]> ListAsync()
+
+    public async Task<ListRouteModel[]> ListAsync()
     {
         var routes = await _appDbContext.Routes
-            .ToListAsync();
+            .Select(route => new ListRouteModel
+            {
+                Id = route.Id,
+                Name = route.Name,
+                ClusterId = route.ClusterId,
+                ClusterName = route.Cluster.Name,
+                MatchHosts = route.MatchHosts.ToArray(),
+                MatchPath = route.MatchPath,
+                Enabled = route.Enabled
+            }).ToArrayAsync();
 
-        var models = routes.Select(route => new RouteModel
-        {
-            Id = route.Id,
-            Name = route.Name,
-            ClusterId = route.ClusterId,
-            MatchHosts = route.MatchHosts.ToArray(),
-            MatchPath = route.MatchPath,
-            Enabled = route.Enabled
-        }).ToArray();
-
-        return models;
+        return routes;
     }
 }

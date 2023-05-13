@@ -9,16 +9,15 @@ namespace SharpyProxy.Controllers;
 public class CoreController : ControllerBase
 {
     [HttpGet("refresh")]
-    public ActionResult Refresh([FromServices] CustomProxyConfigProvider proxyConfigProvider)
+    public void Refresh([FromServices] CustomProxyConfigProvider proxyConfigProvider)
     {
         proxyConfigProvider.Refresh();
-        return Ok();
     }
 
     [HttpGet("stats")]
-    public async Task<ActionResult<StatsModel>> GetStats([FromServices] CoreService coreService)
+    public async Task<StatsModel> GetStats([FromServices] CoreService coreService)
     {
         var stats = await coreService.GetStatsAsync();
-        return Ok(stats);
+        return stats;
     }
 }
