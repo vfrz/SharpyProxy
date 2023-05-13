@@ -4,20 +4,16 @@
         <div class="sm:flex sm:items-center">
             <div class="sm:flex-auto">
                 <h1 class="text-xl font-semibold text-slate-900">
-                    Certificates
-                    <template v-if="certificates">
-                        ({{ certificates.length }})
-                    </template>
+                    Certificates ({{ certificates?.length ?? 0 }})
                 </h1>
                 <p class="mt-2 text-sm text-gray-700">
                     A list of all the certificates on your SharpyProxy instance.
                 </p>
             </div>
             <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-                <button type="button"
-                        class="inline-flex items-center justify-center rounded-md border border-transparent bg-primary-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-600 sm:w-auto">
+                <Button type="button">
                     Upload certificate
-                </button>
+                </Button>
             </div>
         </div>
         <div class="flex flex-col mt-4">

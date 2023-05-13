@@ -34,5 +34,12 @@ export default defineNuxtConfig({
     modules: [
         '@nuxtjs/tailwindcss',
         'nuxt-headlessui'
-    ]
+    ],
+    vite: {
+        vue: {
+            script: {
+                defineModel: true
+            }
+        }
+    }
 })

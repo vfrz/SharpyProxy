@@ -4,21 +4,16 @@
         <div class="sm:flex sm:items-center">
             <div class="sm:flex-auto">
                 <h1 class="text-xl font-semibold text-slate-900">
-                    Clusters
-                    <template v-if="clusters">
-                        ({{ clusters.length }})
-                    </template>
+                    Clusters ({{ clusters?.length ?? 0 }})
                 </h1>
                 <p class="mt-2 text-sm text-gray-700">
                     A list of all the clusters on your SharpyProxy instance.
                 </p>
             </div>
             <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-                <button type="button"
-                        @click="openCreationModal"
-                        class="inline-flex items-center justify-center rounded-md border border-transparent bg-primary-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-600 sm:w-auto">
-                    Add cluster
-                </button>
+                <Button type="button" @click="openCreationModal">
+                    Create cluster
+                </Button>
             </div>
         </div>
         <div class="flex flex-col mt-4">
@@ -83,33 +78,35 @@
                 <DialogOverlay class="fixed inset-0 bg-slate-800 bg-opacity-80 transition-opacity"/>
             </TransitionChild>
 
-            <div class="fixed inset-0 flex justify-center p-4">
+            <div class="fixed inset-0 flex justify-center mt-8">
                 <DialogPanel class="relative w-full h-fit p-4 max-w-xl rounded-lg bg-white">
-                    <div class="absolute top-0 right-0 pt-5 pr-4">
-                        <button type="button" class="text-slate-800 hover:text-slate-600 !outline-none"
-                                @click="closeCreationModal">
-                            <span class="sr-only">Close</span>
-                            <i class="bx bx-x text-2xl"></i>
-                        </button>
-                    </div>
 
                     <h2 class="text-xl font-bold flex items-center text-slate-800">
                         Create new cluster
                     </h2>
 
-                    <form @submit.prevent="createCluster">
-
-                        <div class="block text-sm font-medium text-gray-700 mt-2">
+                    <form v-if="createModel" @submit.prevent="createCluster">
+                        <div class="block text-sm font-medium text-slate-700 mt-2">
                             Cluster id
                         </div>
-                        <input type="text"
-                               v-model="createModel.id"
-                               placeholder="Identifier"
-                               class="shadow-sm mt-2 focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"/>
-                        <div class="block text-sm font-medium text-gray-700 mt-2">
+                        <div class="flex gap-x-2 items-center mt-2">
+                            <div class="grow">
+                                <input type="text"
+                                       v-model="createModel.id"
+                                       placeholder="Identifier"
+                                       class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"/>
+                            </div>
+                            <div class="grow-0 align-middle">
+                                <Toggle v-model="createModel.enabled" class="text-sm font-medium text-slate-700">
+                                    Enabled
+                                </Toggle>
+                            </div>
+                        </div>
+                        <div class="block text-sm font-medium text-slate-700 mt-2">
                             Destinations
                         </div>
                         <div v-for="(destination, index) in createModel.destinations"
+                             :key="destination"
                              class="flex items-center gap-x-2 mt-2">
                             <div class="grow-0">
                                 <input type="text"
@@ -123,20 +120,26 @@
                                        placeholder="Address"
                                        class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md"/>
                             </div>
-                            <div v-if="index == 0" class="grow-0 align-middle justify-center">
+                            <div v-if="index == 0" class="grow-0 flex">
                                 <i @click="createModel.destinations.push(new CreateClusterDestinationModel())"
-                                   class="bx bx-plus-circle text-2xl text-primary-500 cursor-pointer"></i>
+                                   class="bx bx-plus-circle text-2xl text-primary-500 hover:text-primary-600 cursor-pointer"
+                                   title="Add destination">
+                                </i>
                             </div>
-                            <div v-else class="grow-0 align-middle justify-center">
+                            <div v-else class="grow-0 flex">
                                 <i @click="createModel.destinations.splice(createModel.destinations.indexOf(destination), 1)"
-                                   class="bx bx-minus-circle text-2xl text-red-500 cursor-pointer"></i>
+                                   class="bx bx-minus-circle text-2xl text-red-500 hover:text-red-600 cursor-pointer"
+                                   title="Remove destination">
+                                </i>
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <button type="submit"
-                                    class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                        <div class="flex mt-4 gap-x-2">
+                            <Button type="submit">
                                 Create
-                            </button>
+                            </Button>
+                            <Button type="button" @click="closeCreationModal" :style="ButtonStyle.RedOutline">
+                                Cancel
+                            </Button>
                         </div>
                     </form>
                 </DialogPanel>
@@ -158,13 +161,14 @@ import {
 } from "@headlessui/vue";
 import CreateClusterModel from "~/models/cluster/CreateClusterModel";
 import CreateClusterDestinationModel from "~/models/cluster/destination/CreateClusterDestinationModel";
+import ButtonStyle from "~/types/ButtonStyle";
 
 const httpClient = useClustersHttpClient();
 
-const clusters: Ref<ClusterModel[]> = ref();
+const clusters: Ref<ClusterModel[] | undefined> = ref();
 
 const createModalOpen: Ref<boolean> = ref(false);
-const createModel: Ref<CreateClusterModel> = ref();
+const createModel: Ref<CreateClusterModel | undefined> = ref();
 
 onNuxtReady(async () => {
     await reloadClusters();
@@ -175,7 +179,7 @@ async function reloadClusters() {
 }
 
 async function createCluster() {
-    await httpClient.create(createModel.value);
+    await httpClient.create(createModel.value!);
     closeCreationModal();
     await reloadClusters();
 }
@@ -190,5 +194,4 @@ function openCreationModal() {
 function closeCreationModal() {
     createModalOpen.value = false;
 }
-
 </script>
