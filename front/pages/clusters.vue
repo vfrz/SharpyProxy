@@ -44,7 +44,7 @@
                                     {{ cluster.name }}
                                 </td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                    {{ cluster.destinations }}
+                                    {{ cluster.destinations.map(d => d.address).join(", ") }}
                                 </td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                     <EnabledTag :enabled="cluster.enabled"/>

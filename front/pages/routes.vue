@@ -50,10 +50,10 @@
                                     {{ route.name }}
                                 </td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                    {{ route.clusterId }}
+                                    {{ route.clusterName }}
                                 </td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                    {{ route.matchHosts }}
+                                    {{ route.matchHosts.join(", ") }}
                                 </td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                     {{ route.matchPath }}
@@ -79,11 +79,11 @@
 <script setup lang="ts">
 import EnabledTag from "~/components/EnabledTag.vue";
 import {Ref} from "vue";
-import RouteModel from "~/models/route/RouteModel";
+import ListRouteModel from "~/models/route/ListRouteModel";
 
 const httpClient = useRoutesHttpClient();
 
-const routes: Ref<RouteModel[]> = ref();
+const routes: Ref<ListRouteModel[]> = ref();
 
 onNuxtReady(async () => {
     await reloadRoutes();

@@ -1,5 +1,5 @@
 import {ofetch} from "ofetch";
-import RouteModel from "~/models/route/RouteModel";
+import ListRouteModel from "~/models/route/ListRouteModel";
 
 export default function () {
     const runtimeConfig = useRuntimeConfig()
@@ -8,8 +8,8 @@ export default function () {
         baseURL: runtimeConfig.public.apiBaseUrl
     })
 
-    const list = async (): Promise<RouteModel[]> => {
-        return await httpClient<RouteModel[]>("/routes", {
+    const list = async (): Promise<ListRouteModel[]> => {
+        return await httpClient<ListRouteModel[]>("/routes", {
             method: "get"
         })
     }
