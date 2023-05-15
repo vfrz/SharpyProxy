@@ -18,7 +18,7 @@ public class ClusterEntityConfiguration : IEntityTypeConfiguration<ClusterEntity
         builder.HasMany(cluster => cluster.Routes)
             .WithOne(route => route.Cluster);
 
-        builder.HasMany(cluster => cluster.Destinations)
-            .WithOne(destination => destination.Cluster);
+        builder.Property(cluster => cluster.Destinations)
+            .HasColumnType("jsonb");
     }
 }

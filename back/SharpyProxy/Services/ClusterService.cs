@@ -24,11 +24,11 @@ public class ClusterService
         {
             Name = model.Name,
             Enabled = model.Enabled,
-            Destinations = model.Destinations.Select(destination => new ClusterDestinationEntity
+            Destinations = model.Destinations.Select(destination => new ClusterDestination
             {
                 Name = destination.Name,
                 Address = destination.Address
-            }).ToList()
+            }).ToArray()
         };
 
         await _appDbContext.AddAsync(cluster);
@@ -42,17 +42,15 @@ public class ClusterService
     public async Task UpdateAsync(UpdateClusterModel model)
     {
         var entity = await _appDbContext.Clusters
-            .Include(cluster => cluster.Destinations)
             .FirstAsync(cluster => cluster.Id == model.Id);
 
         entity.Name = model.Name;
         entity.Enabled = model.Enabled;
-        entity.Destinations = model.Destinations.Select(destination => new ClusterDestinationEntity
+        entity.Destinations = model.Destinations.Select(destination => new ClusterDestination
         {
-            Id = destination.Id ?? default,
             Name = destination.Name,
             Address = destination.Address
-        }).ToList();
+        }).ToArray();
 
         await _appDbContext.SaveChangesAsync();
     }
@@ -73,7 +71,6 @@ public class ClusterService
     public async Task<ClusterModel> GetAsync(Guid id)
     {
         var cluster = await _appDbContext.Clusters
-            .Include(cluster => cluster.Destinations)
             .FirstOrDefaultAsync(cluster => cluster.Id == id);
 
         if (cluster is null)
@@ -86,7 +83,7 @@ public class ClusterService
             Enabled = cluster.Enabled,
             Destinations = cluster.Destinations.Select(destination => new ClusterDestinationModel
             {
-                Id = destination.Id,
+                Name = destination.Name,
                 Address = destination.Address
             }).ToArray()
         };
@@ -97,7 +94,6 @@ public class ClusterService
     public async Task<ClusterModel[]> ListAsync()
     {
         var clusters = await _appDbContext.Clusters
-            .Include(cluster => cluster.Destinations)
             .ToListAsync();
 
         var models = clusters.Select(cluster => new ClusterModel
@@ -107,7 +103,6 @@ public class ClusterService
             Enabled = cluster.Enabled,
             Destinations = cluster.Destinations.Select(destination => new ClusterDestinationModel
             {
-                Id = destination.Id,
                 Name = destination.Name,
                 Address = destination.Address
             }).ToArray()
