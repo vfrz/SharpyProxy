@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
 using SharpyProxy.Database;
 using Yarp.ReverseProxy.Configuration;
@@ -7,7 +6,7 @@ namespace SharpyProxy.Proxy;
 
 public class CustomProxyConfigProvider : IProxyConfigProvider
 {
-    private ILogger<CustomProxyConfigProvider> _logger;
+    private readonly ILogger<CustomProxyConfigProvider> _logger;
 
     private CancellationTokenSource? _tokenSource;
 
@@ -33,7 +32,6 @@ public class CustomProxyConfigProvider : IProxyConfigProvider
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
         var clusters = dbContext.Clusters
-            .Include(cluster => cluster.Destinations)
             .Where(cluster => cluster.Enabled)
             .ToList()
             .Select(cluster => new ClusterConfig

@@ -3,19 +3,21 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SharpyProxy.Database;
-using SharpyProxy.Database.Entities;
 
 #nullable disable
 
 namespace SharpyProxy.Database.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230513200034_SetClusterDestinationEntityTrackedAndNameIndexes")]
+    partial class SetClusterDestinationEntityTrackedAndNameIndexes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,6 +58,39 @@ namespace SharpyProxy.Database.Migrations
                     b.ToTable("Certificates");
                 });
 
+            modelBuilder.Entity("SharpyProxy.Database.Entities.ClusterDestinationEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ClusterId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedDateUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClusterId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("ClusterDestinations");
+                });
+
             modelBuilder.Entity("SharpyProxy.Database.Entities.ClusterEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -64,10 +99,6 @@ namespace SharpyProxy.Database.Migrations
 
                     b.Property<DateTime>("CreatedDateUtc")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<ClusterDestination[]>("Destinations")
-                        .IsRequired()
-                        .HasColumnType("jsonb");
 
                     b.Property<bool>("Enabled")
                         .HasColumnType("boolean");
@@ -126,6 +157,17 @@ namespace SharpyProxy.Database.Migrations
                     b.ToTable("Routes");
                 });
 
+            modelBuilder.Entity("SharpyProxy.Database.Entities.ClusterDestinationEntity", b =>
+                {
+                    b.HasOne("SharpyProxy.Database.Entities.ClusterEntity", "Cluster")
+                        .WithMany("Destinations")
+                        .HasForeignKey("ClusterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cluster");
+                });
+
             modelBuilder.Entity("SharpyProxy.Database.Entities.RouteEntity", b =>
                 {
                     b.HasOne("SharpyProxy.Database.Entities.ClusterEntity", "Cluster")
@@ -139,6 +181,8 @@ namespace SharpyProxy.Database.Migrations
 
             modelBuilder.Entity("SharpyProxy.Database.Entities.ClusterEntity", b =>
                 {
+                    b.Navigation("Destinations");
+
                     b.Navigation("Routes");
                 });
 #pragma warning restore 612, 618

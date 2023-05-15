@@ -13,7 +13,7 @@ public class ClusterEntity : ITrackedEntity
 
     public List<RouteEntity> Routes { get; set; }
 
-    public List<ClusterDestinationEntity> Destinations { get; set; }
+    public ClusterDestination[] Destinations { get; set; }
 
     public bool Enabled { get; set; }
 

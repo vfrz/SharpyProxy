@@ -1,6 +1,6 @@
 namespace SharpyProxy.Models.Cluster.Destination;
 
-public class ClusterDestinationModel
+public class UpdateClusterDestinationModel
 {
     public string Name { get; set; }
     
