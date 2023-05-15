@@ -3,9 +3,9 @@
     <Container>
         <div class="sm:flex sm:items-center">
             <div class="sm:flex-auto">
-                <h1 class="text-xl font-semibold text-slate-900">
+                <PageTitle>
                     Certificates ({{ certificates?.length ?? 0 }})
-                </h1>
+                </PageTitle>
                 <p class="mt-2 text-sm text-gray-700">
                     A list of all the certificates on your SharpyProxy instance.
                 </p>
@@ -40,7 +40,8 @@
                             </thead>
                             <tbody class="divide-y divide-gray-200 bg-white">
                             <tr v-for="certificate in certificates" :key="certificate.id">
-                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6 font-medium" :title="certificates.id">
+                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6 font-medium"
+                                    :title="certificate.id">
                                     {{ certificate.name }}
                                 </td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
@@ -71,7 +72,7 @@ import EnabledTag from "~/components/EnabledTag.vue";
 
 const httpClient = useCertificatesHttpClient();
 
-const certificates: Ref<ListCertificateModel[]> = ref();
+const certificates: Ref<ListCertificateModel[]> = ref([]);
 
 onNuxtReady(async () => {
     await reloadCertificates();

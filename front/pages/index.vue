@@ -1,7 +1,9 @@
 <template>
     <Title>SharpyProxy</Title>
     <Container>
-        <h1 class="text-xl font-semibold text-slate-900">Instance stats</h1>
+        <PageTitle>
+            Instance stats
+        </PageTitle>
         <DashboardStats></DashboardStats>
     </Container>
 </template>

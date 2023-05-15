@@ -3,9 +3,9 @@
     <Container>
         <div class="sm:flex sm:items-center">
             <div class="sm:flex-auto">
-                <h1 class="text-xl font-semibold text-slate-900">
+                <PageTitle>
                     Routes ({{ routes?.length ?? 0 }})
-                </h1>
+                </PageTitle>
                 <p class="mt-2 text-sm text-gray-700">
                     A list of all the routes on your SharpyProxy instance.
                 </p>
@@ -83,7 +83,7 @@ import ListRouteModel from "~/models/route/ListRouteModel";
 
 const httpClient = useRoutesHttpClient();
 
-const routes: Ref<ListRouteModel[]> = ref();
+const routes: Ref<ListRouteModel[]> = ref([]);
 
 onNuxtReady(async () => {
     await reloadRoutes();

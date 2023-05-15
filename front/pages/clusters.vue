@@ -3,9 +3,9 @@
     <Container>
         <div class="sm:flex sm:items-center">
             <div class="sm:flex-auto">
-                <h1 class="text-xl font-semibold text-slate-900">
+                <PageTitle>
                     Clusters ({{ clusters?.length ?? 0 }})
-                </h1>
+                </PageTitle>
                 <p class="mt-2 text-sm text-gray-700">
                     A list of all the clusters on your SharpyProxy instance.
                 </p>
@@ -72,7 +72,7 @@ import CreateCluster from "~/components/cluster/CreateCluster.vue";
 
 const httpClient = useClustersHttpClient();
 
-const clusters: Ref<ClusterModel[] | undefined> = ref();
+const clusters: Ref<ClusterModel[]> = ref([]);
 
 onNuxtReady(async () => {
     await reloadClusters();
