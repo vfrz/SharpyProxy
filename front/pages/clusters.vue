@@ -38,7 +38,8 @@
                             </thead>
                             <tbody class="divide-y divide-gray-200 bg-white">
                             <tr v-for="cluster in clusters?.sort()" :key="cluster.id">
-                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6 font-medium" :title="cluster.id">
+                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6 font-medium"
+                                    :title="cluster.id">
                                     {{ cluster.name }}
                                 </td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
@@ -48,9 +49,7 @@
                                     <EnabledTag :enabled="cluster.enabled"/>
                                 </td>
                                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-semibold sm:pr-6">
-                                    <NuxtLink to="#" class="text-primary-500 hover:text-primary-800">
-                                        Edit
-                                    </NuxtLink>
+                                    <EditCluster :cluster-id="cluster.id" @cluster-updated="reloadClusters" />
                                 </td>
                             </tr>
                             </tbody>
@@ -60,8 +59,6 @@
             </div>
         </div>
     </Container>
-
-
 </template>
 
 <script setup lang="ts">
@@ -69,6 +66,7 @@ import ClusterModel from "~/models/cluster/ClusterModel";
 import {Ref} from "vue";
 import EnabledTag from "~/components/EnabledTag.vue";
 import CreateCluster from "~/components/cluster/CreateCluster.vue";
+import EditCluster from "~/components/cluster/EditCluster.vue";
 
 const httpClient = useClustersHttpClient();
 
