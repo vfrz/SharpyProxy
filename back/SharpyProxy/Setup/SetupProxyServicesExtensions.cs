@@ -1,3 +1,4 @@
+using FluentValidation;
 using SharpyProxy.Proxy;
 using SharpyProxy.Services;
 using Yarp.ReverseProxy.Configuration;
@@ -19,6 +20,8 @@ public static class SetupProxyServicesExtensions
             .AddScoped<CertificateService>()
             .AddScoped<CoreService>()
             .AddSingleton<CertificateStore>();
+
+        services.AddValidatorsFromAssembly(typeof(SetupProxyServicesExtensions).Assembly);
         
         return builder;
     }

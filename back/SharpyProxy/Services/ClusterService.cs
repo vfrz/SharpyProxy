@@ -1,9 +1,11 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using SharpyProxy.Database;
 using SharpyProxy.Database.Entities;
 using SharpyProxy.Models.Cluster;
 using SharpyProxy.Models.Cluster.Destination;
 using SharpyProxy.Proxy;
+using SharpyProxy.Validators.Cluster;
 
 namespace SharpyProxy.Services;
 
@@ -11,15 +13,20 @@ public class ClusterService
 {
     private readonly AppDbContext _appDbContext;
     private readonly CustomProxyConfigProvider _proxyConfigProvider;
+    private readonly IValidator<CreateClusterModel> _createValidator;
 
-    public ClusterService(AppDbContext appDbContext, CustomProxyConfigProvider proxyConfigProvider)
+    public ClusterService(AppDbContext appDbContext, CustomProxyConfigProvider proxyConfigProvider,
+        IValidator<CreateClusterModel> createValidator)
     {
         _appDbContext = appDbContext;
         _proxyConfigProvider = proxyConfigProvider;
+        _createValidator = createValidator;
     }
 
     public async Task<Guid> CreateAsync(CreateClusterModel model)
     {
+        await _createValidator.ValidateAndThrowAsync(model);
+        
         var cluster = new ClusterEntity
         {
             Name = model.Name,

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SharpyProxy.Models;
 using SharpyProxy.Models.Cluster;
 using SharpyProxy.Services;
 
@@ -8,10 +9,10 @@ namespace SharpyProxy.Controllers;
 public class ClustersController : ControllerBase
 {
     [HttpPost]
-    public async Task<Guid> Create([FromBody] CreateClusterModel model, [FromServices] ClusterService clusterService)
+    public async Task<ApiResponse<Guid>> Create([FromBody] CreateClusterModel model, [FromServices] ClusterService clusterService)
     {
         var id = await clusterService.CreateAsync(model);
-        return id;
+        return new ApiResponse<Guid>(id);
     }
 
     [HttpPut]

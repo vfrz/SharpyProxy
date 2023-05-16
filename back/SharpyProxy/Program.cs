@@ -1,3 +1,6 @@
+using System.Net;
+using Microsoft.AspNetCore.Diagnostics;
+using SharpyProxy.Models;
 using SharpyProxy.Services;
 using SharpyProxy.Setup;
 
@@ -46,6 +49,23 @@ builder.Services.AddCors(o => o.AddPolicy("Default", policyBuilder =>
 }));
 
 var app = builder.Build();
+
+app.UseExceptionHandler(appBuilder =>
+{
+    appBuilder.Run(async context =>
+    {
+        var exceptionHandler = context.Features.Get<IExceptionHandlerPathFeature>()!;
+        var exception = exceptionHandler.Error;
+
+        context.Response.StatusCode = (int) HttpStatusCode.OK;
+        await context.Response.WriteAsJsonAsync(new ApiResponse
+        {
+            Success = false,
+            Message = exception.Message
+        });
+    });
+});
+
 app.UseCors("Default");
 app.MapControllers();
 app.MapReverseProxy(pipeline =>
