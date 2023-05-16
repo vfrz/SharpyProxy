@@ -101,9 +101,14 @@ const createModel: Ref<CreateClusterModel | undefined> = ref();
 const httpClient = useClustersHttpClient();
 
 async function createCluster() {
-    await httpClient.create(createModel.value!);
-    closeCreationModal();
-    emit("cluster-created");
+    let response = await httpClient.create(createModel.value!);
+    if (response.success) {
+        closeCreationModal();
+        emit("cluster-created");
+    } else {
+        //TODO: implement notifications
+        alert("Failed to create cluster: " + response.message);
+    }
 }
 
 function openCreationModal() {
