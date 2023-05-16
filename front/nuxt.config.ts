@@ -4,27 +4,29 @@ export default defineNuxtConfig({
         head: {
             title: "SharpyProxy",
             htmlAttrs: {
-                lang: 'en',
+                lang: "en",
             },
             bodyAttrs: {
-                class: 'bg-neutral-100 dark:bg-slate-900 dark:text-white'
+                class: "bg-neutral-100"
             }
         }
     },
     router: {
         options: {
-            linkExactActiveClass: 'active'
+            linkExactActiveClass: "active"
         }
     },
     runtimeConfig: {
         public: {
-            version: "0.1.0",
-            apiBaseUrl: 'http://localhost:8080/.proxy-api'
+            apiBaseUrl: "http://localhost:8080/.proxy-api"
         }
     },
+    appConfig: {
+        version: "0.1.0"
+    },
     css: [
-        '@/assets/css/sharpy-proxy.css',
-        'boxicons/css/boxicons.css'
+        "@/assets/css/sharpy-proxy.css",
+        "boxicons/css/boxicons.css"
     ],
     nitro: {
         compressPublicAssets: {
@@ -33,8 +35,8 @@ export default defineNuxtConfig({
         }
     },
     modules: [
-        '@nuxtjs/tailwindcss',
-        'nuxt-headlessui'
+        "@nuxtjs/tailwindcss",
+        "nuxt-headlessui"
     ],
     vite: {
         vue: {

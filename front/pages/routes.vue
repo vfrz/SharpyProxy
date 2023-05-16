@@ -3,10 +3,10 @@
     <Container>
         <div class="sm:flex sm:items-center">
             <div class="sm:flex-auto">
-                <PageTitle>
+                <MainTitle>
                     Routes ({{ routes?.length ?? 0 }})
-                </PageTitle>
-                <p class="mt-2 text-sm text-gray-700">
+                </MainTitle>
+                <p class="mt-2 text-sm text-slate-700">
                     A list of all the routes on your SharpyProxy instance.
                 </p>
             </div>
@@ -24,19 +24,19 @@
                             <thead class="bg-slate-50">
                             <tr>
                                 <th scope="col"
-                                    class="py-3.5 px-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+                                    class="py-3.5 px-4 pr-3 text-left text-sm font-semibold text-slate-900 sm:pl-6">
                                     Name
                                 </th>
-                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">
                                     Cluster
                                 </th>
-                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">
                                     Match hosts
                                 </th>
-                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">
                                     Match path
                                 </th>
-                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">
                                     Status
                                 </th>
                                 <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
@@ -49,16 +49,16 @@
                                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6 font-medium" :title="route.id">
                                     {{ route.name }}
                                 </td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500" :title="route.clusterId">
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500" :title="route.clusterId">
                                     {{ route.clusterName }}
                                 </td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
                                     {{ route.matchHosts.join(", ") }}
                                 </td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
                                     {{ route.matchPath }}
                                 </td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
                                     <EnabledTag :enabled="route.enabled"/>
                                 </td>
                                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-semibold sm:pr-6">

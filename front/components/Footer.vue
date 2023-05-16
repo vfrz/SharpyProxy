@@ -9,7 +9,7 @@
             </div>
             <div class="mt-8 md:mt-0 md:order-1">
                 <p class="text-center text-base text-slate-400">
-                    SharpyProxy - v{{ config.public.version }}
+                    SharpyProxy - v{{ appConfig.version }}
                 </p>
             </div>
         </Container>
@@ -17,5 +17,5 @@
 </template>
 
 <script setup lang="ts">
-const config = useRuntimeConfig();
+const appConfig = useAppConfig();
 </script>

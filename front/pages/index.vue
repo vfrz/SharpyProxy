@@ -1,10 +1,10 @@
 <template>
     <Title>SharpyProxy</Title>
     <Container>
-        <PageTitle>
+        <MainTitle>
             Instance stats
-        </PageTitle>
-        <DashboardStats></DashboardStats>
+        </MainTitle>
+        <DashboardStats class="mt-4"></DashboardStats>
     </Container>
 </template>
 

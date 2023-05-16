@@ -3,10 +3,10 @@
     <Container>
         <div class="sm:flex sm:items-center">
             <div class="sm:flex-auto">
-                <PageTitle>
+                <MainTitle>
                     Clusters ({{ clusters?.length ?? 0 }})
-                </PageTitle>
-                <p class="mt-2 text-sm text-gray-700">
+                </MainTitle>
+                <p class="mt-2 text-sm text-slate-700">
                     A list of all the clusters on your SharpyProxy instance.
                 </p>
             </div>
@@ -22,13 +22,13 @@
                             <thead class="bg-slate-50">
                             <tr>
                                 <th scope="col"
-                                    class="py-3.5 px-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+                                    class="py-3.5 px-4 pr-3 text-left text-sm font-semibold text-slate-900 sm:pl-6">
                                     Name
                                 </th>
-                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">
                                     Destinations
                                 </th>
-                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">
                                     Status
                                 </th>
                                 <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
@@ -42,10 +42,10 @@
                                     :title="cluster.id">
                                     {{ cluster.name }}
                                 </td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
                                     {{ cluster.destinations.map(d => d.address).join(", ") }}
                                 </td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
                                     <EnabledTag :enabled="cluster.enabled"/>
                                 </td>
                                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-semibold sm:pr-6">

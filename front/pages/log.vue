@@ -1,9 +1,9 @@
 <template>
     <Title>SharpyProxy - Audit log</Title>
     <Container>
-        <PageTitle>
+        <MainTitle>
             Audit log
-        </PageTitle>
+        </MainTitle>
     </Container>
 </template>
 
