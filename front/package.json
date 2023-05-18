@@ -9,6 +9,8 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@vee-validate/nuxt": "^4.9.4",
+    "@vee-validate/zod": "^4.9.4",
     "boxicons": "^2.1.4"
   },
   "devDependencies": {
