@@ -1,4 +1,5 @@
 using FluentValidation;
+using SharpyProxy.Certificates;
 using SharpyProxy.Proxy;
 using SharpyProxy.Services;
 using Yarp.ReverseProxy.Configuration;

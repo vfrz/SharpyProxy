@@ -1,5 +1,6 @@
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.EntityFrameworkCore;
+using SharpyProxy.Certificates;
 using SharpyProxy.Database;
 using SharpyProxy.Database.Entities;
 using SharpyProxy.Extensions;
@@ -21,11 +22,16 @@ public class CertificateService
 
     public async Task<Guid> UploadAsync(UploadCertificateModel model)
     {
+        var certificate = X509Certificate2.CreateFromPem(model.Pem, model.Key);
+
         var entity = new CertificateEntity
         {
             Name = model.Name,
             Pem = model.Pem,
-            Key = model.Key
+            Key = model.Key,
+            Domain = certificate.GetDomain(),
+            ExpirationDateUtc = certificate.GetExpiration().ToUniversalTime(),
+            Type = CertificateType.Unmanaged
         };
 
         await _appDbContext.AddAsync(entity);
@@ -56,8 +62,9 @@ public class CertificateService
             {
                 Id = entity.Id,
                 Name = entity.Name,
-                Domain = certificate.GetDomain(),
-                Expiration = certificate.GetExpiration()
+                Domain = entity.Domain,
+                Expiration = entity.ExpirationDateUtc,
+                Type = entity.Type
             };
         }).ToArray();
         return models;

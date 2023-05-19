@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using SharpyProxy.Database;
 using SharpyProxy.Extensions;
 
-namespace SharpyProxy.Services;
+namespace SharpyProxy.Certificates;
 
 public class CertificateStore
 {
