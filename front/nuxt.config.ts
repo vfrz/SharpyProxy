@@ -18,7 +18,7 @@ export default defineNuxtConfig({
     },
     runtimeConfig: {
         public: {
-            apiBaseUrl: "http://localhost:8080/.proxy-api"
+            apiBaseUrl: "http://localhost:8181"
         }
     },
     appConfig: {

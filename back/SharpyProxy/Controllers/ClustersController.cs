@@ -5,7 +5,7 @@ using SharpyProxy.Services;
 
 namespace SharpyProxy.Controllers;
 
-[Route(".proxy-api/clusters")]
+[Route("clusters")]
 public class ClustersController : ControllerBase
 {
     [HttpPost]

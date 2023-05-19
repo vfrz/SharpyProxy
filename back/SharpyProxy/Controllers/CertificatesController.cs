@@ -4,7 +4,7 @@ using SharpyProxy.Services;
 
 namespace SharpyProxy.Controllers;
 
-[Route(".proxy-api/certificates")]
+[Route("certificates")]
 public class CertificatesController : ControllerBase
 {
     [HttpPost]

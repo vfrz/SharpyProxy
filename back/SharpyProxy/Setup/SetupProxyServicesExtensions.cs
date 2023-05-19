@@ -10,7 +10,7 @@ public static class SetupProxyServicesExtensions
     public static WebApplicationBuilder SetupProxyServices(this WebApplicationBuilder builder)
     {
         var services = builder.Services;
-        
+
         services.AddSingleton<CustomProxyConfigProvider>()
             .AddSingleton<IProxyConfigProvider>(provider => provider.GetRequiredService<CustomProxyConfigProvider>())
             .AddReverseProxy();

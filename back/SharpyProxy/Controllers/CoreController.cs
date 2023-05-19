@@ -5,7 +5,7 @@ using SharpyProxy.Services;
 
 namespace SharpyProxy.Controllers;
 
-[Route(".proxy-api/core")]
+[Route("core")]
 public class CoreController : ControllerBase
 {
     [HttpGet("refresh")]

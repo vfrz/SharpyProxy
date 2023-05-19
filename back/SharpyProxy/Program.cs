@@ -2,24 +2,24 @@ using System.Net;
 using Microsoft.AspNetCore.Diagnostics;
 using SharpyProxy.Models;
 using SharpyProxy.Services;
+using SharpyProxy.Settings;
 using SharpyProxy.Setup;
-
-IServiceProvider? serviceProvider = null;
 
 var builder = WebApplication.CreateBuilder(args)
     .SetupDatabase()
     .SetupProxyServices();
 
+var portsSettings = builder.Configuration.GetSection(PortsSettings.Section).Get<PortsSettings>() ?? new PortsSettings();
+
 builder.WebHost.ConfigureKestrel(kestrelOptions =>
 {
-    kestrelOptions.ListenAnyIP(4343, options =>
+    kestrelOptions.ListenAnyIP(portsSettings.Https, options =>
     {
         options.UseHttps(httpsOptions =>
         {
             httpsOptions.ServerCertificateSelector = (context, name) =>
             {
-                if (serviceProvider is null)
-                    throw new Exception("SharpyProxy is not ready to take requests");
+                var certificateStore = options.ApplicationServices.GetRequiredService<CertificateStore>();
 
                 if (string.IsNullOrEmpty(name))
                 {
@@ -27,7 +27,6 @@ builder.WebHost.ConfigureKestrel(kestrelOptions =>
                     return null;
                 }
                     
-                var certificateStore = serviceProvider.GetRequiredService<CertificateStore>();
                 if (certificateStore.LoadedCertificates.TryGetValue(name, out var certificate))
                     return certificate;
 
@@ -35,7 +34,8 @@ builder.WebHost.ConfigureKestrel(kestrelOptions =>
             };
         });
     });
-    kestrelOptions.ListenAnyIP(8080);
+    kestrelOptions.ListenAnyIP(portsSettings.Http);
+    kestrelOptions.ListenAnyIP(portsSettings.Api);
 });
 
 builder.Services.AddControllers();
@@ -67,7 +67,7 @@ app.UseExceptionHandler(appBuilder =>
 });
 
 app.UseCors("Default");
-app.MapControllers();
+app.MapControllers().RequireHost($"*:{portsSettings.Api}");
 app.MapReverseProxy(pipeline =>
 {
     pipeline.Use((context, next) =>
@@ -77,7 +77,6 @@ app.MapReverseProxy(pipeline =>
     });
 });
 
-serviceProvider = app.Services;
 var certificateStore = app.Services.GetRequiredService<CertificateStore>();
 await certificateStore.ReloadCertificatesAsync();
 
