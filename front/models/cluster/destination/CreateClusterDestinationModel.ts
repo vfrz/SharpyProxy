@@ -1,4 +1,4 @@
-export default class CreateClusterDestinationModel {
-    public name: string = "";
-    public address: string = "";
+export default interface CreateClusterDestinationModel {
+    name: string,
+    address: string
 }

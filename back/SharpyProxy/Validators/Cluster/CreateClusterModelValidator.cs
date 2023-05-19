@@ -10,8 +10,7 @@ public class CreateClusterModelValidator : AbstractValidator<CreateClusterModel>
     {
         RuleFor(model => model.Name)
             .NotNull()
-            .NotEmpty()
-            .MinimumLength(1);
+            .NotEmpty();
 
         RuleFor(model => model.Destinations)
             .NotNull()

@@ -88,7 +88,6 @@
 <script setup lang="ts">
 import {Dialog, DialogOverlay, DialogPanel, TransitionChild, TransitionRoot} from "@headlessui/vue";
 import {Ref} from "vue";
-import CreateClusterDestinationModel from "~/models/cluster/destination/CreateClusterDestinationModel";
 import ButtonStyle from "~/types/ButtonStyle";
 import UpdateClusterModel from "~/models/cluster/UpdateClusterModel";
 import UpdateClusterDestinationModel from "~/models/cluster/destination/UpdateClusterDestinationModel";

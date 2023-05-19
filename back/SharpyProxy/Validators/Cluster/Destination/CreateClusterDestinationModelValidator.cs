@@ -9,12 +9,10 @@ public class CreateClusterDestinationModelValidator : AbstractValidator<CreateCl
     {
         RuleFor(destination => destination.Name)
             .NotNull()
-            .NotEmpty()
-            .MinimumLength(1);
+            .NotEmpty();
 
         RuleFor(destination => destination.Address)
             .NotNull()
-            .NotEmpty()
-            .MinimumLength(1);
+            .NotEmpty();
     }
 }

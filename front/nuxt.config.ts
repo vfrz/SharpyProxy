@@ -36,7 +36,8 @@ export default defineNuxtConfig({
     },
     modules: [
         "@nuxtjs/tailwindcss",
-        "nuxt-headlessui"
+        "nuxt-headlessui",
+        "@vee-validate/nuxt"
     ],
     vite: {
         vue: {
