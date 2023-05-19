@@ -2,7 +2,6 @@ using System.Net;
 using Microsoft.AspNetCore.Diagnostics;
 using SharpyProxy.Certificates;
 using SharpyProxy.Models;
-using SharpyProxy.Services;
 using SharpyProxy.Settings;
 using SharpyProxy.Setup;
 

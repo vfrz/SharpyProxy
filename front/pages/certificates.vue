@@ -42,7 +42,8 @@
               </tr>
               </thead>
               <tbody class="divide-y divide-gray-200 bg-white">
-              <tr v-for="certificate in certificates.sort((a, b) => a.name.localeCompare(b.name))" :key="certificate.id">
+              <tr v-for="certificate in certificates.sort((a, b) => a.name.localeCompare(b.name))"
+                  :key="certificate.id">
                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6 font-medium"
                     :title="certificate.id">
                   {{ certificate.name }}

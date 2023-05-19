@@ -5,7 +5,6 @@ using SharpyProxy.Database.Entities;
 using SharpyProxy.Models.Cluster;
 using SharpyProxy.Models.Cluster.Destination;
 using SharpyProxy.Proxy;
-using SharpyProxy.Validators.Cluster;
 
 namespace SharpyProxy.Services;
 
@@ -60,6 +59,8 @@ public class ClusterService
         }).ToArray();
 
         await _appDbContext.SaveChangesAsync();
+        
+        _proxyConfigProvider.Refresh();
     }
 
     public async Task<bool> DeleteAsync(Guid id)

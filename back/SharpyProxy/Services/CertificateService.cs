@@ -54,19 +54,15 @@ public class CertificateService
 
     public async Task<ListCertificateModel[]> ListAsync()
     {
-        var entities = await _appDbContext.Certificates.ToArrayAsync();
-        var models = entities.Select(entity =>
-        {
-            var certificate = X509Certificate2.CreateFromPem(entity.Pem, entity.Key);
-            return new ListCertificateModel
+        var models = await _appDbContext.Certificates
+            .Select(entity => new ListCertificateModel
             {
                 Id = entity.Id,
                 Name = entity.Name,
                 Domain = entity.Domain,
                 Expiration = entity.ExpirationDateUtc,
                 Type = entity.Type
-            };
-        }).ToArray();
+            }).ToArrayAsync();
         return models;
     }
 }
