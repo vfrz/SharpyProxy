@@ -12,7 +12,7 @@
             </div>
             <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
                 <Button type="button">
-                    Create route
+                    Add route
                 </Button>
             </div>
         </div>
@@ -45,7 +45,7 @@
                             </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200 bg-white">
-                            <tr v-for="route in routes" :key="route.id">
+                            <tr v-for="route in routes.sort((a, b) => a.name.localeCompare(b.name))" :key="route.id">
                                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6 font-medium" :title="route.id">
                                     {{ route.name }}
                                 </td>

@@ -11,7 +11,7 @@
                 </p>
             </div>
             <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-                <CreateCluster @cluster-created="reloadClusters"/>
+                <ClusterAddButtonAndModal @cluster-created="reloadClusters"/>
             </div>
         </div>
         <div class="flex flex-col mt-4">
@@ -37,7 +37,7 @@
                             </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200 bg-white">
-                            <tr v-for="cluster in clusters?.sort()" :key="cluster.id">
+                            <tr v-for="cluster in clusters?.sort((a, b) => a.name.localeCompare(b.name))" :key="cluster.id">
                                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6 font-medium"
                                     :title="cluster.id">
                                     {{ cluster.name }}
@@ -49,7 +49,7 @@
                                     <EnabledTag :enabled="cluster.enabled"/>
                                 </td>
                                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-semibold sm:pr-6">
-                                    <EditCluster :cluster-id="cluster.id" @cluster-updated="reloadClusters" />
+                                    <ClusterEditButtonAndModal :cluster-id="cluster.id" @cluster-updated="reloadClusters" />
                                 </td>
                             </tr>
                             </tbody>
@@ -64,9 +64,6 @@
 <script setup lang="ts">
 import ClusterModel from "~/models/cluster/ClusterModel";
 import {Ref} from "vue";
-import EnabledTag from "~/components/EnabledTag.vue";
-import CreateCluster from "~/components/cluster/CreateCluster.vue";
-import EditCluster from "~/components/cluster/EditCluster.vue";
 
 const httpClient = useClustersHttpClient();
 

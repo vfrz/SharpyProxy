@@ -1,6 +1,6 @@
 <template>
   <Button type="button" @click="openCreationModal">
-    Create cluster
+    Add cluster
   </Button>
   <TransitionRoot
           :show="createModalOpen"
@@ -20,7 +20,7 @@
       <div class="fixed inset-0 flex justify-center mt-8">
         <DialogPanel class="relative w-full h-fit p-4 max-w-xl rounded-lg bg-white">
           <h2 class="text-xl font-bold text-slate-800 text-center">
-            Create new cluster
+            New cluster
           </h2>
           <Separator/>
           <Form v-if="createModel" @submit="createCluster" :validation-schema="validationSchema" v-slot="{errors}">
@@ -85,7 +85,7 @@
             </div>
             <div class="flex mt-4 gap-x-2">
               <Button type="submit" class="grow">
-                Create
+                Save
               </Button>
               <Button type="button" class="grow" @click="closeCreationModal" :style="ButtonStyle.RedOutline">
                 Cancel
