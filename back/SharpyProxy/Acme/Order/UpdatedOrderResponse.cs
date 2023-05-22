@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace SharpyProxy.Acme.Order;
 
-public class NewOrderResponse
+public class UpdatedOrderResponse
 {
     [JsonPropertyName("status")]
     public string Status { get; set; }
@@ -24,4 +24,10 @@ public class NewOrderResponse
 
     [JsonPropertyName("finalize")]
     public string Finalize { get; set; }
+
+    [JsonPropertyName("certificate")]
+    public string? Certificate { get; set; }
+
+    [JsonIgnore]
+    public string Location { get; set; }
 }

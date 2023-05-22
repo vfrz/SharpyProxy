@@ -1,9 +1,11 @@
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
 using Microsoft.IdentityModel.Tokens;
 using SharpyProxy.Acme.Exceptions;
+using SharpyProxy.Acme.Extensions;
 using SharpyProxy.Acme.Order;
 using SharpyProxy.Extensions;
 
@@ -75,7 +77,7 @@ public class AcmeClient : IDisposable
         };
     }
 
-    public async Task<NewOrderResponse> NewOrderAsync(AcmeAccount account, params string[] domains)
+    public async Task<OrderResponse> NewOrderAsync(AcmeAccount account, params string[] domains)
     {
         var payload = new
         {
@@ -88,8 +90,21 @@ public class AcmeClient : IDisposable
 
         var response = await SendSignedRequestAsync(Directory.NewOrder, payload, account.Key, account.Url);
 
-        var orderResponse = await response.Content.ReadJsonAsync<NewOrderResponse>();
-        
+        var orderResponse = await response.Content.ReadJsonAsync<OrderResponse>();
+
+        orderResponse.Location = response.Headers.Location!.ToString();
+
+        return orderResponse;
+    }
+    
+    public async Task<OrderResponse> GetOrderAsync(AcmeAccount account, string order)
+    {
+        var response = await SendSignedRequestAsync(order, null, account.Key, account.Url);
+
+        var orderResponse = await response.Content.ReadJsonAsync<OrderResponse>();
+
+        orderResponse.Location = order;
+
         return orderResponse;
     }
 
@@ -100,6 +115,57 @@ public class AcmeClient : IDisposable
         var challengesResponse = await response.Content.ReadJsonAsync<AuthorizationChallengesResponse>();
 
         return challengesResponse;
+    }
+
+    public async Task<AuthorizationReadyChallenge> AuthorizationReadyForCheckAsync(AcmeAccount account, string authorizationUrl)
+    {
+        var response = await SendSignedRequestAsync(authorizationUrl, new { }, account.Key, account.Url);
+
+        var authorizationReadyChallengeResponse = await response.Content.ReadJsonAsync<AuthorizationReadyChallenge>();
+
+        return authorizationReadyChallengeResponse;
+    }
+
+    public async Task<UpdatedOrderResponse> GetChallengeUpdatedAsync(AcmeAccount account, string authorizationUrl)
+    {
+        var response = await SendSignedRequestAsync(authorizationUrl, null, account.Key, account.Url);
+
+        var updatedOrderResponse = await response.Content.ReadJsonAsync<UpdatedOrderResponse>();
+
+        return updatedOrderResponse;
+    }
+
+    public async Task<UpdatedOrderResponse> FinalizeChallengeAsync(AcmeAccount account, string url, string domain, RSA certificateKey)
+    {
+        var csr = new CertificateRequest($"CN={domain}", certificateKey, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+        var csrBytes = csr.CreateSigningRequest();
+
+        var payload = new
+        {
+            csr = Base64UrlEncoder.Encode(csrBytes)
+        };
+
+        var response = await SendSignedRequestAsync(url, payload, account.Key, account.Url);
+
+        var updatedOrderResponse = await response.Content.ReadJsonAsync<UpdatedOrderResponse>();
+
+        updatedOrderResponse.Location = response.Headers.Location!.ToString();
+
+        return updatedOrderResponse;
+    }
+
+    public async Task<string> DownloadCertificateAsync(AcmeAccount account, string certificateUrl)
+    {
+        var response = await SendSignedRequestAsync(certificateUrl, null, account.Key, account.Url);
+
+        var certificate = await response.Content.ReadAsStringAsync();
+
+        return certificate;
+    }
+
+    public string GetAuthorizationKey(AcmeAccount account, string token)
+    {
+        return $"{token}.{Base64UrlEncoder.Encode(account.Key.GetJWKThumbprint())}";
     }
 
     private async Task FetchNewNonceAsync()
@@ -164,7 +230,11 @@ public class AcmeClient : IDisposable
         httpRequest.Content = content;
 
         var response = await _httpClient.SendAsync(httpRequest);
-        _nonce = response.Headers.GetValues("Replay-Nonce").First();
+
+        if (response.Headers.Contains("Replay-Nonce"))
+            _nonce = response.Headers.GetValues("Replay-Nonce").First();
+        else
+            await FetchNewNonceAsync();
 
         if (!response.IsSuccessStatusCode)
         {
