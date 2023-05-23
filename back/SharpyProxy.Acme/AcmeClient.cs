@@ -4,16 +4,15 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
 using Microsoft.IdentityModel.Tokens;
+using SharpyProxy.Acme.Account;
 using SharpyProxy.Acme.Exceptions;
 using SharpyProxy.Acme.Extensions;
 using SharpyProxy.Acme.Order;
-using SharpyProxy.Extensions;
 
 namespace SharpyProxy.Acme;
 
 public class AcmeClient : IDisposable
 {
-    private readonly AcmeSettings _settings;
     private readonly HttpClient _httpClient;
 
     private AcmeDirectory Directory => _directory ?? throw new Exception($"Directory is missing, you should initialize the client first by calling {nameof(InitializeAsync)}().");
@@ -22,58 +21,69 @@ public class AcmeClient : IDisposable
 
     public AcmeClient(AcmeSettings settings)
     {
-        _settings = settings;
         _httpClient = new HttpClient
         {
             BaseAddress = new Uri(settings.ServerUrl)
         };
     }
 
+    /// <summary>
+    /// Initialize the client by fetching the directory and initial nonce
+    /// </summary>
     public async Task InitializeAsync()
     {
-        _directory = await _httpClient.GetFromJsonAsync<AcmeDirectory>("/directory") ?? throw new Exception();
+        var directoryResponse = await _httpClient.GetAsync("/directory");
+        directoryResponse.EnsureSuccessStatusCode();
+        _directory = await directoryResponse.Content.ReadJsonAsync<AcmeDirectory>();
         await FetchNewNonceAsync();
     }
 
-    public async Task<AcmeAccount> CreateAccountAsync(string emailAddress)
+    public async Task<NewAccountResult> NewAccountAsync(params string[] emailAddresses)
     {
-        var key = RSA.Create(2048);
+        using var rsaKey = RSA.Create(2048);
 
         var payload = new
         {
             termsOfServiceAgreed = true,
-            contact = new[]
-            {
-                $"mailto:{emailAddress}"
-            }
+            contact = emailAddresses.Select(e => $"mailto:{e}").ToArray()
         };
 
-        var response = await SendSignedRequestAsync(Directory.NewAccount, payload, key);
+        var responseMessage = await SendSignedRequestAsync(Directory.NewAccount, payload, rsaKey);
+        var httpResponse = await responseMessage.Content.ReadJsonAsync<NewAccountHttpResponse>();
 
-        var accountUrl = response.Headers.Location!.ToString();
-
-        return new AcmeAccount
+        var account = new AcmeAccount
         {
-            Key = key,
-            Url = accountUrl
+            RSAParameters = rsaKey.ExportParameters(true),
+            Url = responseMessage.Headers.Location!.ToString()
+        };
+
+        return new NewAccountResult
+        {
+            HttpResponse = httpResponse,
+            Account = account
         };
     }
 
-    public async Task<AcmeAccount> LoadAccountFromKeyAsync(RSA key)
+    public async Task<FindAccountByKeyResult> FindAccountByKeyAsync(RSA rsaKey)
     {
         var payload = new
         {
             onlyReturnExisting = true
         };
 
-        var response = await SendSignedRequestAsync(Directory.NewAccount, payload, key);
+        var responseMessage = await SendSignedRequestAsync(Directory.NewAccount, payload, rsaKey);
+        var httpResponse = await responseMessage.Content.ReadJsonAsync<FindAccountByKeyHttpResponse>();
 
-        var accountUrl = response.Headers.Location!.ToString();
-
-        return new AcmeAccount
+        var account = new AcmeAccount
         {
-            Key = key,
-            Url = accountUrl
+            RSAParameters = rsaKey.ExportParameters(true),
+            Url = responseMessage.Headers.Location!.ToString()
+        };
+
+        return new FindAccountByKeyResult
+        {
+            HttpResponse = httpResponse,
+            Account = account
         };
     }
 
@@ -88,7 +98,8 @@ public class AcmeClient : IDisposable
             }).ToArray()
         };
 
-        var response = await SendSignedRequestAsync(Directory.NewOrder, payload, account.Key, account.Url);
+        using var accountRsaKey = account.CreateKeyFromParameters();
+        var response = await SendSignedRequestAsync(Directory.NewOrder, payload, accountRsaKey, account.Url);
 
         var orderResponse = await response.Content.ReadJsonAsync<OrderResponse>();
 
@@ -96,10 +107,11 @@ public class AcmeClient : IDisposable
 
         return orderResponse;
     }
-    
+
     public async Task<OrderResponse> GetOrderAsync(AcmeAccount account, string order)
     {
-        var response = await SendSignedRequestAsync(order, null, account.Key, account.Url);
+        using var accountRsaKey = account.CreateKeyFromParameters();
+        var response = await SendSignedRequestAsync(order, null, accountRsaKey, account.Url);
 
         var orderResponse = await response.Content.ReadJsonAsync<OrderResponse>();
 
@@ -110,7 +122,8 @@ public class AcmeClient : IDisposable
 
     public async Task<AuthorizationChallengesResponse> GetAuthorizationChallengesAsync(AcmeAccount account, string authorization)
     {
-        var response = await SendSignedRequestAsync(authorization, null, account.Key, account.Url);
+        using var accountRsaKey = account.CreateKeyFromParameters();
+        var response = await SendSignedRequestAsync(authorization, null, accountRsaKey, account.Url);
 
         var challengesResponse = await response.Content.ReadJsonAsync<AuthorizationChallengesResponse>();
 
@@ -119,7 +132,8 @@ public class AcmeClient : IDisposable
 
     public async Task<AuthorizationReadyChallenge> AuthorizationReadyForCheckAsync(AcmeAccount account, string authorizationUrl)
     {
-        var response = await SendSignedRequestAsync(authorizationUrl, new { }, account.Key, account.Url);
+        using var accountRsaKey = account.CreateKeyFromParameters();
+        var response = await SendSignedRequestAsync(authorizationUrl, new { }, accountRsaKey, account.Url);
 
         var authorizationReadyChallengeResponse = await response.Content.ReadJsonAsync<AuthorizationReadyChallenge>();
 
@@ -128,7 +142,8 @@ public class AcmeClient : IDisposable
 
     public async Task<UpdatedOrderResponse> GetChallengeUpdatedAsync(AcmeAccount account, string authorizationUrl)
     {
-        var response = await SendSignedRequestAsync(authorizationUrl, null, account.Key, account.Url);
+        using var accountRsaKey = account.CreateKeyFromParameters();
+        var response = await SendSignedRequestAsync(authorizationUrl, null, accountRsaKey, account.Url);
 
         var updatedOrderResponse = await response.Content.ReadJsonAsync<UpdatedOrderResponse>();
 
@@ -145,7 +160,8 @@ public class AcmeClient : IDisposable
             csr = Base64UrlEncoder.Encode(csrBytes)
         };
 
-        var response = await SendSignedRequestAsync(url, payload, account.Key, account.Url);
+        using var accountRsaKey = account.CreateKeyFromParameters();
+        var response = await SendSignedRequestAsync(url, payload, accountRsaKey, account.Url);
 
         var updatedOrderResponse = await response.Content.ReadJsonAsync<UpdatedOrderResponse>();
 
@@ -156,7 +172,8 @@ public class AcmeClient : IDisposable
 
     public async Task<string> DownloadCertificateAsync(AcmeAccount account, string certificateUrl)
     {
-        var response = await SendSignedRequestAsync(certificateUrl, null, account.Key, account.Url);
+        using var accountRsaKey = account.CreateKeyFromParameters();
+        var response = await SendSignedRequestAsync(certificateUrl, null, accountRsaKey, account.Url);
 
         var certificate = await response.Content.ReadAsStringAsync();
 
@@ -165,12 +182,15 @@ public class AcmeClient : IDisposable
 
     public string GetAuthorizationKey(AcmeAccount account, string token)
     {
-        return $"{token}.{Base64UrlEncoder.Encode(account.Key.GetJWKThumbprint())}";
+        using var accountRsaKey = account.CreateKeyFromParameters();
+        //TODO Maybe use this: var jwkThumbprint = new RsaSecurityKey(account.RSAParameters).ComputeJwkThumbprint();
+        return $"{token}.{Base64UrlEncoder.Encode(accountRsaKey.GetJWKThumbprint())}";
     }
 
     private async Task FetchNewNonceAsync()
     {
-        var response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, Directory.NewNonce));
+        var request = new HttpRequestMessage(HttpMethod.Head, Directory.NewNonce);
+        var response = await _httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
         _nonce = response.Headers.GetValues("Replay-Nonce").First();
     }
@@ -247,6 +267,13 @@ public class AcmeClient : IDisposable
 
     public void Dispose()
     {
-        _httpClient.Dispose();
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+            _httpClient.Dispose();
     }
 }

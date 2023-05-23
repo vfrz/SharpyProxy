@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text.Json;
 using SharpyProxy.Acme;
+using SharpyProxy.Acme.Account;
 
 const string accountPemFile = "account.pem";
 const string emailAddress = "";
@@ -17,16 +18,18 @@ AcmeAccount account;
 
 if (File.Exists(accountPemFile))
 {
-    var key = RSA.Create();
-    key.ImportFromPem(await File.ReadAllTextAsync(accountPemFile));
-    account = await client.LoadAccountFromKeyAsync(key);
+    using var rsaKey = RSA.Create();
+    rsaKey.ImportFromPem(await File.ReadAllTextAsync(accountPemFile));
+    var findAccountResult = await client.FindAccountByKeyAsync(rsaKey);
+    account = findAccountResult.Account;
 }
 else
 {
-    account = await client.CreateAccountAsync(emailAddress);
-    await File.WriteAllTextAsync(accountPemFile, account.Key.ExportRSAPrivateKeyPem());
+    var newAccountResult = await client.NewAccountAsync(emailAddress);
+    account = newAccountResult.Account;
+    using var rsaKey = account.CreateKeyFromParameters();
+    await File.WriteAllTextAsync(accountPemFile, rsaKey.ExportRSAPrivateKeyPem());
 }
-
 
 var order = await client.NewOrderAsync(account, domain);
 Console.WriteLine(JsonSerializer.Serialize(order));

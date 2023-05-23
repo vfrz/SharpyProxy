@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Repo", "Repo", "{C35B5977-8
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpyProxy.Sandbox", "SharpyProxy.Sandbox\SharpyProxy.Sandbox.csproj", "{1A2C53E8-F86E-4233-8D59-8D15773D44A4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpyProxy.Acme", "SharpyProxy.Acme\SharpyProxy.Acme.csproj", "{A6FF4D7D-7B9B-49A1-8458-B9935EE165A6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,5 +33,9 @@ Global
 		{1A2C53E8-F86E-4233-8D59-8D15773D44A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A2C53E8-F86E-4233-8D59-8D15773D44A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A2C53E8-F86E-4233-8D59-8D15773D44A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6FF4D7D-7B9B-49A1-8458-B9935EE165A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6FF4D7D-7B9B-49A1-8458-B9935EE165A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6FF4D7D-7B9B-49A1-8458-B9935EE165A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6FF4D7D-7B9B-49A1-8458-B9935EE165A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

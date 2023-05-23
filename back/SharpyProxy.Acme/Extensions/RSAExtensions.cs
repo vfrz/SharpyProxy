@@ -9,12 +9,12 @@ public static class RSAExtensions
 {
     public static byte[] GetJWKThumbprint(this RSA key)
     {
-        var accountKeyExportParameters = key.ExportParameters(false);
+        var keyExportParameters = key.ExportParameters(false);
         var jwk = new
         {
-            e = Base64UrlEncoder.Encode(accountKeyExportParameters.Exponent),
+            e = Base64UrlEncoder.Encode(keyExportParameters.Exponent),
             kty = "RSA",
-            n = Base64UrlEncoder.Encode(accountKeyExportParameters.Modulus)
+            n = Base64UrlEncoder.Encode(keyExportParameters.Modulus)
         };
         var jsonJwk = JsonSerializer.Serialize(jwk);
         var thumbprint = SHA256.HashData(Encoding.UTF8.GetBytes(jsonJwk));

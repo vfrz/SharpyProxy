@@ -8,7 +8,7 @@ public class AcmeException : Exception
 
     public int Status { get; }
 
-    public AcmeException(string type, string detail, int status)
+    public AcmeException(string type, string detail, int status) : base($"[{type}] {detail} ({status})")
     {
         Type = type;
         Detail = detail;
@@ -18,10 +18,5 @@ public class AcmeException : Exception
     public AcmeException(AcmeErrorResponse errorResponse)
         : this(errorResponse.Type, errorResponse.Detail, errorResponse.Status)
     {
-    }
-
-    public override string ToString()
-    {
-        return $"[{Type}] {Detail} ({Status})";
     }
 }
