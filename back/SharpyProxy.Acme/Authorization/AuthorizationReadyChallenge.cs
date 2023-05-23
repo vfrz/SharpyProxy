@@ -1,7 +1,8 @@
 using System.Text.Json.Serialization;
 
-namespace SharpyProxy.Acme.Order;
+namespace SharpyProxy.Acme.Authorization;
 
+[Obsolete("Replace with proper DTO")]
 public class AuthorizationReadyChallenge
 {
     [JsonPropertyName("type")]

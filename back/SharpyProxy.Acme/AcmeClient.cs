@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.IdentityModel.Tokens;
 using SharpyProxy.Acme.Account;
+using SharpyProxy.Acme.Authorization;
 using SharpyProxy.Acme.Exceptions;
 using SharpyProxy.Acme.Extensions;
 using SharpyProxy.Acme.Order;
@@ -142,37 +143,47 @@ public sealed class AcmeClient : IDisposable
         return order;
     }
 
-    public async Task<AuthorizationChallengesResponse> GetAuthorizationChallengesAsync(AcmeAccount account, string authorizationUrl)
+    public async Task<AcmeAuthorization> FetchAuthorizationAsync(AcmeAccount account, string authorizationUrl)
     {
         using var accountRsaKey = account.CreateKeyFromParameters();
         var response = await SendSignedRequestAsync(authorizationUrl, null, accountRsaKey, account.Url);
 
-        var challengesResponse = await response.Content.ReadJsonAsync<AuthorizationChallengesResponse>();
+        Console.WriteLine(await response.ToDebugStringAsync());
 
-        return challengesResponse;
+        var dto = await response.Content.ReadJsonAsync<AcmeAuthorizationDto>();
+
+        var authorization = new AcmeAuthorization
+        {
+            Url = authorizationUrl,
+            Identifier = dto.Identifier,
+            Status = AcmeAuthorization.ParseStatus(dto.Status),
+            Expires = dto.Expires,
+            Challenges = dto.Challenges.Select(c => new AcmeAuthorizationChallenge
+            {
+                Type = AcmeAuthorizationChallenge.ParseType(c.Type),
+                Status = AcmeAuthorizationChallenge.ParseStatus(c.Status),
+                Url = c.Url,
+                Token = c.Token,
+                Validated = c.Validated,
+                Error = c.Error
+            }).ToArray(),
+            Wildcard = dto.Wildcard
+        };
+        
+        return authorization;
     }
 
-    public async Task<AuthorizationReadyChallenge> AuthorizationReadyForCheckAsync(AcmeAccount account, string authorizationUrl)
+    public async Task<AuthorizationReadyChallenge> ChallengeReadyForCheckAsync(AcmeAccount account, string challengeUrl)
     {
         using var accountRsaKey = account.CreateKeyFromParameters();
-        var response = await SendSignedRequestAsync(authorizationUrl, new { }, accountRsaKey, account.Url);
+        var response = await SendSignedRequestAsync(challengeUrl, new { }, accountRsaKey, account.Url);
 
         var authorizationReadyChallengeResponse = await response.Content.ReadJsonAsync<AuthorizationReadyChallenge>();
 
         return authorizationReadyChallengeResponse;
     }
 
-    public async Task<UpdatedOrderResponse> GetChallengeUpdatedAsync(AcmeAccount account, string authorizationUrl)
-    {
-        using var accountRsaKey = account.CreateKeyFromParameters();
-        var response = await SendSignedRequestAsync(authorizationUrl, null, accountRsaKey, account.Url);
-
-        var updatedOrderResponse = await response.Content.ReadJsonAsync<UpdatedOrderResponse>();
-
-        return updatedOrderResponse;
-    }
-
-    public async Task<UpdatedOrderResponse> FinalizeChallengeAsync(AcmeAccount account, string finalizeUrl,
+    public async Task<AcmeOrder> FinalizeOrderAsync(AcmeAccount account, string finalizeUrl,
         string domain, RSA certificateKey)
     {
         var csr = new CertificateRequest($"CN={domain}", certificateKey, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
@@ -186,11 +197,23 @@ public sealed class AcmeClient : IDisposable
         using var accountRsaKey = account.CreateKeyFromParameters();
         var response = await SendSignedRequestAsync(finalizeUrl, payload, accountRsaKey, account.Url);
 
-        var updatedOrderResponse = await response.Content.ReadJsonAsync<UpdatedOrderResponse>();
+        var dto = await response.Content.ReadJsonAsync<AcmeOrderDto>();
 
-        updatedOrderResponse.Location = response.Headers.Location!.ToString();
-
-        return updatedOrderResponse;
+        var order = new AcmeOrder
+        {
+            Url = response.Headers.Location!.ToString(),
+            Error = dto.Error,
+            Expires = dto.Expires,
+            NotAfter = dto.NotAfter,
+            NotBefore = dto.NotBefore,
+            Identifiers = dto.Identifiers,
+            Status = AcmeOrder.ParseStatus(dto.Status),
+            AuthorizationUrls = dto.Authorizations,
+            CertificateUrl = dto.Certificate,
+            FinalizeUrl = dto.Finalize
+        };
+        
+        return order;
     }
 
     public async Task<string> DownloadCertificateAsync(AcmeAccount account, string certificateUrl)
