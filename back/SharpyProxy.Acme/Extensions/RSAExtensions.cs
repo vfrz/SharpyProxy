@@ -5,9 +5,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace SharpyProxy.Acme.Extensions;
 
-public static class RSAExtensions
+internal static class RSAExtensions
 {
-    public static byte[] GetJWKThumbprint(this RSA key)
+    internal static byte[] GetJWKThumbprint(this RSA key)
     {
         var keyExportParameters = key.ExportParameters(false);
         var jwk = new

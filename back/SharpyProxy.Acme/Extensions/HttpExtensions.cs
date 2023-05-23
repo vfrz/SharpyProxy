@@ -3,14 +3,14 @@ using System.Text;
 
 namespace SharpyProxy.Acme.Extensions;
 
-public static class HttpExtensions
+internal static class HttpExtensions
 {
-    public static async Task<T> ReadJsonAsync<T>(this HttpContent content)
+    internal static async Task<T> ReadJsonAsync<T>(this HttpContent content)
     {
         return (await content.ReadFromJsonAsync<T>()) ?? throw new Exception("Failed to parse json from http response");
     }
 
-    public static async Task<string> ToDebugStringAsync(this HttpResponseMessage response)
+    internal static async Task<string> ToDebugStringAsync(this HttpResponseMessage response)
     {
         var builder = new StringBuilder();
 

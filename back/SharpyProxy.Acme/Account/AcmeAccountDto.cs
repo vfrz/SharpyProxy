@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace SharpyProxy.Acme.Account;
 
-public class NewAccountHttpResponse
+internal class AcmeAccountDto
 {
     [JsonPropertyName("key")]
     public JsonObject Key { get; set; }

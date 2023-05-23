@@ -2,19 +2,22 @@ using System.Text.Json.Serialization;
 
 namespace SharpyProxy.Acme.Order;
 
-public class OrderResponse
+public class AcmeOrderDto
 {
     [JsonPropertyName("status")]
     public string Status { get; set; }
 
     [JsonPropertyName("expires")]
-    public DateTime Expires { get; set; }
+    public DateTime? Expires { get; set; }
 
     [JsonPropertyName("notBefore")]
-    public DateTime NotBefore { get; set; }
+    public DateTime? NotBefore { get; set; }
 
     [JsonPropertyName("notAfter")]
-    public DateTime NotAfter { get; set; }
+    public DateTime? NotAfter { get; set; }
+    
+    [JsonPropertyName("error")]
+    public AcmeError? Error { get; set; }
 
     [JsonPropertyName("identifiers")]
     public AcmeIdentifier[] Identifiers { get; set; }
@@ -27,7 +30,4 @@ public class OrderResponse
 
     [JsonPropertyName("certificate")]
     public string? Certificate { get; set; }
-
-    [JsonIgnore]
-    public string Location { get; set; }
 }

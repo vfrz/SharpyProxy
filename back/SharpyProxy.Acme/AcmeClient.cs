@@ -11,7 +11,7 @@ using SharpyProxy.Acme.Order;
 
 namespace SharpyProxy.Acme;
 
-public class AcmeClient : IDisposable
+public sealed class AcmeClient : IDisposable
 {
     private readonly HttpClient _httpClient;
 
@@ -38,7 +38,7 @@ public class AcmeClient : IDisposable
         await FetchNewNonceAsync();
     }
 
-    public async Task<NewAccountResult> NewAccountAsync(params string[] emailAddresses)
+    public async Task<AcmeAccount> NewAccountAsync(params string[] emailAddresses)
     {
         using var rsaKey = RSA.Create(2048);
 
@@ -49,45 +49,43 @@ public class AcmeClient : IDisposable
         };
 
         var responseMessage = await SendSignedRequestAsync(Directory.NewAccount, payload, rsaKey);
-        var httpResponse = await responseMessage.Content.ReadJsonAsync<NewAccountHttpResponse>();
+        var dto = await responseMessage.Content.ReadJsonAsync<AcmeAccountDto>();
 
         var account = new AcmeAccount
         {
             RSAParameters = rsaKey.ExportParameters(true),
-            Url = responseMessage.Headers.Location!.ToString()
+            Url = responseMessage.Headers.Location!.ToString(),
+            Contact = dto.Contact,
+            Status = AcmeAccount.ParseStatus(dto.Status),
+            CreatedAt = dto.CreatedAt
         };
 
-        return new NewAccountResult
-        {
-            HttpResponse = httpResponse,
-            Account = account
-        };
+        return account;
     }
 
-    public async Task<FindAccountByKeyResult> FindAccountByKeyAsync(RSA rsaKey)
+    public async Task<AcmeAccount> FindAccountByKeyAsync(RSA rsaKey, bool onlyReturnExisting = true)
     {
         var payload = new
         {
-            onlyReturnExisting = true
+            onlyReturnExisting
         };
 
         var responseMessage = await SendSignedRequestAsync(Directory.NewAccount, payload, rsaKey);
-        var httpResponse = await responseMessage.Content.ReadJsonAsync<FindAccountByKeyHttpResponse>();
+        var dto = await responseMessage.Content.ReadJsonAsync<AcmeAccountDto>();
 
         var account = new AcmeAccount
         {
             RSAParameters = rsaKey.ExportParameters(true),
-            Url = responseMessage.Headers.Location!.ToString()
+            Url = responseMessage.Headers.Location!.ToString(),
+            Contact = dto.Contact,
+            Status = AcmeAccount.ParseStatus(dto.Status),
+            CreatedAt = dto.CreatedAt
         };
 
-        return new FindAccountByKeyResult
-        {
-            HttpResponse = httpResponse,
-            Account = account
-        };
+        return account;
     }
 
-    public async Task<OrderResponse> NewOrderAsync(AcmeAccount account, params string[] domains)
+    public async Task<AcmeOrder> NewOrderAsync(AcmeAccount account, params string[] domains)
     {
         var payload = new
         {
@@ -101,29 +99,53 @@ public class AcmeClient : IDisposable
         using var accountRsaKey = account.CreateKeyFromParameters();
         var response = await SendSignedRequestAsync(Directory.NewOrder, payload, accountRsaKey, account.Url);
 
-        var orderResponse = await response.Content.ReadJsonAsync<OrderResponse>();
+        var dto = await response.Content.ReadJsonAsync<AcmeOrderDto>();
 
-        orderResponse.Location = response.Headers.Location!.ToString();
+        var order = new AcmeOrder
+        {
+            Url = response.Headers.Location!.ToString(),
+            Error = dto.Error,
+            Expires = dto.Expires,
+            NotAfter = dto.NotAfter,
+            NotBefore = dto.NotBefore,
+            Identifiers = dto.Identifiers,
+            Status = AcmeOrder.ParseStatus(dto.Status),
+            AuthorizationUrls = dto.Authorizations,
+            CertificateUrl = dto.Certificate,
+            FinalizeUrl = dto.Finalize
+        };
 
-        return orderResponse;
+        return order;
     }
 
-    public async Task<OrderResponse> GetOrderAsync(AcmeAccount account, string order)
+    public async Task<AcmeOrder> FetchOrderAsync(AcmeAccount account, string orderUrl)
     {
         using var accountRsaKey = account.CreateKeyFromParameters();
-        var response = await SendSignedRequestAsync(order, null, accountRsaKey, account.Url);
+        var response = await SendSignedRequestAsync(orderUrl, null, accountRsaKey, account.Url);
 
-        var orderResponse = await response.Content.ReadJsonAsync<OrderResponse>();
+        var dto = await response.Content.ReadJsonAsync<AcmeOrderDto>();
 
-        orderResponse.Location = order;
+        var order = new AcmeOrder
+        {
+            Url = orderUrl,
+            Error = dto.Error,
+            Expires = dto.Expires,
+            NotAfter = dto.NotAfter,
+            NotBefore = dto.NotBefore,
+            Identifiers = dto.Identifiers,
+            Status = AcmeOrder.ParseStatus(dto.Status),
+            AuthorizationUrls = dto.Authorizations,
+            CertificateUrl = dto.Certificate,
+            FinalizeUrl = dto.Finalize
+        };
 
-        return orderResponse;
+        return order;
     }
 
-    public async Task<AuthorizationChallengesResponse> GetAuthorizationChallengesAsync(AcmeAccount account, string authorization)
+    public async Task<AuthorizationChallengesResponse> GetAuthorizationChallengesAsync(AcmeAccount account, string authorizationUrl)
     {
         using var accountRsaKey = account.CreateKeyFromParameters();
-        var response = await SendSignedRequestAsync(authorization, null, accountRsaKey, account.Url);
+        var response = await SendSignedRequestAsync(authorizationUrl, null, accountRsaKey, account.Url);
 
         var challengesResponse = await response.Content.ReadJsonAsync<AuthorizationChallengesResponse>();
 
@@ -150,7 +172,8 @@ public class AcmeClient : IDisposable
         return updatedOrderResponse;
     }
 
-    public async Task<UpdatedOrderResponse> FinalizeChallengeAsync(AcmeAccount account, string url, string domain, RSA certificateKey)
+    public async Task<UpdatedOrderResponse> FinalizeChallengeAsync(AcmeAccount account, string finalizeUrl,
+        string domain, RSA certificateKey)
     {
         var csr = new CertificateRequest($"CN={domain}", certificateKey, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
         var csrBytes = csr.CreateSigningRequest();
@@ -161,7 +184,7 @@ public class AcmeClient : IDisposable
         };
 
         using var accountRsaKey = account.CreateKeyFromParameters();
-        var response = await SendSignedRequestAsync(url, payload, accountRsaKey, account.Url);
+        var response = await SendSignedRequestAsync(finalizeUrl, payload, accountRsaKey, account.Url);
 
         var updatedOrderResponse = await response.Content.ReadJsonAsync<UpdatedOrderResponse>();
 
@@ -267,13 +290,6 @@ public class AcmeClient : IDisposable
 
     public void Dispose()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
-            _httpClient.Dispose();
+        _httpClient.Dispose();
     }
 }
