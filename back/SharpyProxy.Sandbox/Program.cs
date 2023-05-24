@@ -36,8 +36,8 @@ Console.WriteLine(JsonSerializer.Serialize(authorization));
 Console.WriteLine($"Key: {client.GetAuthorizationKey(account, authorization.HttpChallenge!.Token)}");
 Console.ReadLine();
 
-var authorizationReadyResponse = await client.ChallengeReadyForCheckAsync(account, authorization.HttpChallenge!.Url);
-Console.WriteLine(JsonSerializer.Serialize(authorizationReadyResponse));
+var challenge = await client.ChallengeReadyForValidationAsync(account, authorization.HttpChallenge!.Url);
+Console.WriteLine(JsonSerializer.Serialize(challenge));
 Console.ReadLine();
 
 var certificateKey = RSA.Create(2048);
@@ -46,11 +46,11 @@ if (File.Exists("certificate-key.pem"))
 else
     await File.WriteAllTextAsync("certificate-key.pem", certificateKey.ExportRSAPrivateKeyPem());
 
-var updatedOrder = await client.FinalizeOrderAsync(account, order.FinalizeUrl, domain, certificateKey);
-Console.WriteLine(JsonSerializer.Serialize(updatedOrder));
+var finalizedOrder = await client.FinalizeOrderAsync(account, order.FinalizeUrl, domain, certificateKey);
+Console.WriteLine(JsonSerializer.Serialize(finalizedOrder));
 Console.ReadLine();
 
-var certificateUrl = updatedOrder.CertificateUrl;
+var certificateUrl = finalizedOrder.CertificateUrl;
 
 if (certificateUrl is null)
 {

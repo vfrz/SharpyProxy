@@ -6,6 +6,7 @@ using System.Text.Json;
 using Microsoft.IdentityModel.Tokens;
 using SharpyProxy.Acme.Account;
 using SharpyProxy.Acme.Authorization;
+using SharpyProxy.Acme.Challenge;
 using SharpyProxy.Acme.Exceptions;
 using SharpyProxy.Acme.Extensions;
 using SharpyProxy.Acme.Order;
@@ -148,8 +149,6 @@ public sealed class AcmeClient : IDisposable
         using var accountRsaKey = account.CreateKeyFromParameters();
         var response = await SendSignedRequestAsync(authorizationUrl, null, accountRsaKey, account.Url);
 
-        Console.WriteLine(await response.ToDebugStringAsync());
-
         var dto = await response.Content.ReadJsonAsync<AcmeAuthorizationDto>();
 
         var authorization = new AcmeAuthorization
@@ -169,22 +168,63 @@ public sealed class AcmeClient : IDisposable
             }).ToArray(),
             Wildcard = dto.Wildcard
         };
-        
+
         return authorization;
     }
 
-    public async Task<AuthorizationReadyChallenge> ChallengeReadyForCheckAsync(AcmeAccount account, string challengeUrl)
+    public async Task<AcmeChallenge> ChallengeReadyForValidationAsync(AcmeAccount account, string challengeUrl)
     {
         using var accountRsaKey = account.CreateKeyFromParameters();
         var response = await SendSignedRequestAsync(challengeUrl, new { }, accountRsaKey, account.Url);
 
-        var authorizationReadyChallengeResponse = await response.Content.ReadJsonAsync<AuthorizationReadyChallenge>();
+        var dto = await response.Content.ReadJsonAsync<AcmeChallengeDto>();
 
-        return authorizationReadyChallengeResponse;
+        return new AcmeChallenge
+        {
+            Url = dto.Url,
+            Error = dto.Error,
+            Status = AcmeChallenge.ParseStatus(dto.Status),
+            Type = AcmeChallenge.ParseType(dto.Type),
+            Token = dto.Token,
+            Validated = dto.Validated,
+            ValidationRecord = dto.ValidationRecord.Select(v => new AcmeChallengeValidationRecord
+            {
+                Hostname = v.Hostname,
+                Port = v.Port,
+                Url = v.Url,
+                AddressesResolved = v.AddressesResolved,
+                AddressUsed = v.AddressUsed
+            }).ToArray()
+        };
     }
 
-    public async Task<AcmeOrder> FinalizeOrderAsync(AcmeAccount account, string finalizeUrl,
-        string domain, RSA certificateKey)
+    public async Task<AcmeChallenge> FetchChallengeAsync(AcmeAccount account, string challengeUrl)
+    {
+        using var accountRsaKey = account.CreateKeyFromParameters();
+        var response = await SendSignedRequestAsync(challengeUrl, null, accountRsaKey, account.Url);
+
+        var dto = await response.Content.ReadJsonAsync<AcmeChallengeDto>();
+
+        return new AcmeChallenge
+        {
+            Url = dto.Url,
+            Error = dto.Error,
+            Status = AcmeChallenge.ParseStatus(dto.Status),
+            Type = AcmeChallenge.ParseType(dto.Type),
+            Token = dto.Token,
+            Validated = dto.Validated,
+            ValidationRecord = dto.ValidationRecord.Select(v => new AcmeChallengeValidationRecord
+            {
+                Hostname = v.Hostname,
+                Port = v.Port,
+                Url = v.Url,
+                AddressesResolved = v.AddressesResolved,
+                AddressUsed = v.AddressUsed
+            }).ToArray()
+        };
+    }
+
+    public async Task<AcmeOrder> FinalizeOrderAsync(AcmeAccount account, string finalizeUrl, string domain, RSA certificateKey)
     {
         var csr = new CertificateRequest($"CN={domain}", certificateKey, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
         var csrBytes = csr.CreateSigningRequest();
@@ -212,7 +252,7 @@ public sealed class AcmeClient : IDisposable
             CertificateUrl = dto.Certificate,
             FinalizeUrl = dto.Finalize
         };
-        
+
         return order;
     }
 
