@@ -11,9 +11,8 @@
         </p>
       </div>
       <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-        <Button type="button">
-          Add certificate
-        </Button>
+        <CertificateAddButtonAndModal>
+        </CertificateAddButtonAndModal>
       </div>
     </div>
     <div class="flex flex-col mt-4">

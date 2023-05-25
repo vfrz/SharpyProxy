@@ -72,7 +72,11 @@ app.MapReverseProxy(pipeline =>
 {
     pipeline.Use((context, next) =>
     {
-        //TODO Implement ACME HTTP verification here
+        if (context.Request.Path.StartsWithSegments("/.well-known/acme-challenge"))
+        {
+            //TODO Implement ACME HTTP verification here
+            Console.WriteLine("Acme Challenge");
+        }
         return next();
     });
 });
