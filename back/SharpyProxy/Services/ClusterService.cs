@@ -79,6 +79,7 @@ public class ClusterService
     public async Task<ClusterModel> GetAsync(Guid id)
     {
         var cluster = await _appDbContext.Clusters
+            .AsNoTracking()
             .FirstOrDefaultAsync(cluster => cluster.Id == id);
 
         if (cluster is null)
@@ -102,6 +103,7 @@ public class ClusterService
     public async Task<ClusterModel[]> ListAsync()
     {
         var clusters = await _appDbContext.Clusters
+            .AsNoTracking()
             .ToListAsync();
 
         var models = clusters.Select(cluster => new ClusterModel

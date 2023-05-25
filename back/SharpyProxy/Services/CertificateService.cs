@@ -55,6 +55,7 @@ public class CertificateService
     public async Task<ListCertificateModel[]> ListAsync()
     {
         var models = await _appDbContext.Certificates
+            .AsNoTracking()
             .Select(entity => new ListCertificateModel
             {
                 Id = entity.Id,
