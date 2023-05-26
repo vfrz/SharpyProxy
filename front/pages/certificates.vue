@@ -54,7 +54,7 @@
                   {{ certificate.expiration }}
                 </td>
                 <td class="whitespace-nowrap px-3 py-4">
-                  <div :class="[certificate.type == CertificateType.Managed ? 'text-indigo-700 bg-indigo-100' : 'text-orange-700 bg-orange-100', 'inline-flex rounded-full px-2 text-xs font-semibold leading-5']">
+                  <div :class="[certificate.type == CertificateType.Managed ? 'text-teal-700 bg-teal-100' : 'text-orange-700 bg-orange-100', 'inline-flex rounded-full px-2 text-xs font-semibold leading-5']">
                     {{ CertificateType[certificate.type] }}
                   </div>
                 </td>
