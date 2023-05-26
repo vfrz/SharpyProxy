@@ -17,7 +17,7 @@ public class AcmeChallengeDto
     public string Token { get; set; }
 
     [JsonPropertyName("validationRecord")]
-    public AcmeChallengeValidationRecordDto[] ValidationRecord { get; set; }
+    public AcmeChallengeValidationRecordDto[]? ValidationRecord { get; set; }
 
     [JsonPropertyName("validated")]
     public DateTime? Validated { get; set; }

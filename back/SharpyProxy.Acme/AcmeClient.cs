@@ -6,6 +6,7 @@ using System.Text.Json;
 using Microsoft.IdentityModel.Tokens;
 using SharpyProxy.Acme.Account;
 using SharpyProxy.Acme.Authorization;
+using SharpyProxy.Acme.Certificate;
 using SharpyProxy.Acme.Challenge;
 using SharpyProxy.Acme.Exceptions;
 using SharpyProxy.Acme.Extensions;
@@ -190,14 +191,14 @@ public sealed class AcmeClient : IDisposable
             Type = AcmeChallenge.ParseType(dto.Type),
             Token = dto.Token,
             Validated = dto.Validated,
-            ValidationRecord = dto.ValidationRecord.Select(v => new AcmeChallengeValidationRecord
+            ValidationRecord = dto.ValidationRecord?.Select(v => new AcmeChallengeValidationRecord
             {
                 Hostname = v.Hostname,
                 Port = v.Port,
                 Url = v.Url,
                 AddressesResolved = v.AddressesResolved,
                 AddressUsed = v.AddressUsed
-            }).ToArray()
+            }).ToArray() ?? Array.Empty<AcmeChallengeValidationRecord>()
         };
     }
 
@@ -259,14 +260,15 @@ public sealed class AcmeClient : IDisposable
         return order;
     }
 
-    public async Task<string> DownloadCertificateAsync(AcmeAccount account, string certificateUrl)
+    public async Task<AcmeCertificates> DownloadCertificateAsync(AcmeAccount account, string certificateUrl)
     {
         using var accountRsaKey = account.CreateKeyFromParameters();
         var response = await SendSignedRequestAsync(certificateUrl, null, accountRsaKey, account.Url);
 
-        var certificate = await response.Content.ReadAsStringAsync();
+        var certificatesText = await response.Content.ReadAsStringAsync();
+        var split = certificatesText.Split("\n\n").Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
 
-        return certificate;
+        return new AcmeCertificates(split);
     }
 
     public string GetAuthorizationKey(AcmeAccount account, string token)

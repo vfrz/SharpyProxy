@@ -14,6 +14,12 @@ public class CertificatesController : ControllerBase
         return id;
     }
 
+    [HttpPost("managed")]
+    public async Task CreateManaged([FromBody] CreateManagedCertificateModel model, [FromServices] CertificateService certificateService)
+    {
+        await certificateService.CreateManagedCertificateAsync(model);
+    }
+
     [HttpDelete("{certificateId:guid}")]
     public async Task Delete([FromRoute] Guid certificateId, [FromServices] CertificateService certificateService)
     {

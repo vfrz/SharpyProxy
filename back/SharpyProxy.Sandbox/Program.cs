@@ -61,7 +61,7 @@ if (certificateUrl is null)
     certificateUrl = orderAfter.CertificateUrl;
 }
 
-var certificate = await client.DownloadCertificateAsync(account, certificateUrl!);
+var certificates = await client.DownloadCertificateAsync(account, certificateUrl!);
 
 Console.WriteLine("Certificate downloaded");
-await File.WriteAllTextAsync("certificate.pem", certificate);
+await File.WriteAllTextAsync("certificate.pem", certificates.EndUserPemCertificate);
