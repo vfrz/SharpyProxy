@@ -1,4 +1,5 @@
 using FluentValidation;
+using SharpyProxy.Acme;
 using SharpyProxy.Certificates;
 using SharpyProxy.Proxy;
 using SharpyProxy.Services;
@@ -20,7 +21,12 @@ public static class SetupProxyServicesExtensions
             .AddScoped<ClusterService>()
             .AddScoped<CertificateService>()
             .AddScoped<CoreService>()
-            .AddSingleton<CertificateStore>();
+            .AddSingleton<CertificateStore>()
+            .AddSingleton(new AcmeSettings
+            {
+                ServerUrl = AcmeKnownServers.LetsEncryptV2StagingUrl
+            })
+            .AddScoped<AcmeClient>();
 
         services.AddValidatorsFromAssembly(typeof(SetupProxyServicesExtensions).Assembly);
         

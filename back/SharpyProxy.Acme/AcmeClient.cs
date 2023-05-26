@@ -87,15 +87,18 @@ public sealed class AcmeClient : IDisposable
         return account;
     }
 
-    public async Task<AcmeOrder> NewOrderAsync(AcmeAccount account, params string[] domains)
+    public async Task<AcmeOrder> NewOrderAsync(AcmeAccount account, string domain)
     {
         var payload = new
         {
-            identifiers = domains.Select(domain => new
+            identifiers = new[]
             {
-                type = "dns",
-                value = domain
-            }).ToArray()
+                new
+                {
+                    type = "dns",
+                    value = domain
+                }
+            }
         };
 
         using var accountRsaKey = account.CreateKeyFromParameters();
@@ -269,6 +272,11 @@ public sealed class AcmeClient : IDisposable
     public string GetAuthorizationKey(AcmeAccount account, string token)
     {
         using var accountRsaKey = account.CreateKeyFromParameters();
+        return GetAuthorizationKey(accountRsaKey, token);
+    }
+
+    public string GetAuthorizationKey(RSA accountRsaKey, string token)
+    {
         //TODO Maybe use this: var jwkThumbprint = new RsaSecurityKey(account.RSAParameters).ComputeJwkThumbprint();
         return $"{token}.{Base64UrlEncoder.Encode(accountRsaKey.GetJWKThumbprint())}";
     }

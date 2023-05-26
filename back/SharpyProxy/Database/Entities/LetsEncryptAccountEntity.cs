@@ -11,11 +11,13 @@ public class LetsEncryptAccountEntity : ITrackedEntity
 
     public string Email { get; set; }
 
-    public string Pem { get; set; }
+    public byte[] RSABytes { get; set; }
 
     public DateTime CreatedDateUtc { get; set; }
 
     public DateTime UpdatedDateUtc { get; set; }
     
     public List<CertificateEntity> Certificates { get; set; }
+    
+    public List<LetsEncryptChallengeEntity> Challenges { get; set; }
 }

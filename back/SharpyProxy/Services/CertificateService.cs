@@ -1,5 +1,8 @@
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.EntityFrameworkCore;
+using SharpyProxy.Acme;
+using SharpyProxy.Acme.Account;
 using SharpyProxy.Certificates;
 using SharpyProxy.Database;
 using SharpyProxy.Database.Entities;
@@ -14,10 +17,38 @@ public class CertificateService
 
     private readonly AppDbContext _appDbContext;
 
-    public CertificateService(CertificateStore certificateStore, AppDbContext appDbContext)
+    private readonly IServiceScopeFactory _serviceScopeFactory;
+
+    public CertificateService(CertificateStore certificateStore, AppDbContext appDbContext, IServiceScopeFactory serviceScopeFactory)
     {
         _certificateStore = certificateStore;
         _appDbContext = appDbContext;
+        _serviceScopeFactory = serviceScopeFactory;
+    }
+
+    public async Task CreateManagedCertificateAsync(CreateManagedCertificateModel model)
+    {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var acmeClient = scope.ServiceProvider.GetRequiredService<AcmeClient>();
+
+        await acmeClient.InitializeAsync();
+
+        var existingAccount = await _appDbContext.LetsEncryptAccounts
+            .FirstOrDefaultAsync(account => account.Email == model.Email);
+
+        AcmeAccount account;
+        if (existingAccount is not null)
+        {
+            using var accountRsa = RSA.Create();
+            accountRsa.ImportRSAPrivateKey(existingAccount.RSABytes, out _);
+            account = await acmeClient.FindAccountByKeyAsync(accountRsa);
+        }
+        else
+        {
+            account = await acmeClient.NewAccountAsync(model.Email);
+        }
+        
+        //TODO complete
     }
 
     public async Task<Guid> UploadAsync(UploadCertificateModel model)

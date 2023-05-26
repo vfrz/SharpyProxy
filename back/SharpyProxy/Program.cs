@@ -1,6 +1,7 @@
 using System.Net;
 using Microsoft.AspNetCore.Diagnostics;
 using SharpyProxy.Certificates;
+using SharpyProxy.Middlewares;
 using SharpyProxy.Models;
 using SharpyProxy.Settings;
 using SharpyProxy.Setup;
@@ -38,6 +39,8 @@ builder.WebHost.ConfigureKestrel(kestrelOptions =>
     kestrelOptions.ListenAnyIP(portsSettings.Api);
 });
 
+builder.Services.AddScoped<AcmeChallengeMiddleware>();
+
 builder.Services.AddControllers();
 builder.Services.AddCors(o => o.AddPolicy("Default", policyBuilder =>
 {
@@ -70,15 +73,7 @@ app.UseCors("Default");
 app.MapControllers().RequireHost($"*:{portsSettings.Api}");
 app.MapReverseProxy(pipeline =>
 {
-    pipeline.Use((context, next) =>
-    {
-        if (context.Request.Path.StartsWithSegments("/.well-known/acme-challenge"))
-        {
-            //TODO Implement ACME HTTP verification here
-            Console.WriteLine("Acme Challenge");
-        }
-        return next();
-    });
+    pipeline.UseMiddleware<AcmeChallengeMiddleware>();
 });
 
 var certificateStore = app.Services.GetRequiredService<CertificateStore>();
