@@ -1,5 +1,6 @@
 using System.Net;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.EntityFrameworkCore;
 using SharpyProxy.Acme;
 using SharpyProxy.Database;
@@ -15,7 +16,7 @@ public class AcmeChallengeMiddleware : IMiddleware
             var dbContext = context.RequestServices.GetRequiredService<AppDbContext>();
             var acmeClient = context.RequestServices.GetRequiredService<AcmeClient>();
             
-            var pathUri = new Uri(context.Request.Path);
+            var pathUri = new Uri(context.Request.GetEncodedUrl());
             var domain = pathUri.Host;
             var token = pathUri.Segments.Last();
 

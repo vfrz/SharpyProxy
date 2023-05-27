@@ -217,14 +217,14 @@ public sealed class AcmeClient : IDisposable
             Type = AcmeChallenge.ParseType(dto.Type),
             Token = dto.Token,
             Validated = dto.Validated,
-            ValidationRecord = dto.ValidationRecord.Select(v => new AcmeChallengeValidationRecord
+            ValidationRecord = dto.ValidationRecord?.Select(v => new AcmeChallengeValidationRecord
             {
                 Hostname = v.Hostname,
                 Port = v.Port,
                 Url = v.Url,
                 AddressesResolved = v.AddressesResolved,
                 AddressUsed = v.AddressUsed
-            }).ToArray()
+            }).ToArray() ?? Array.Empty<AcmeChallengeValidationRecord>()
         };
     }
 

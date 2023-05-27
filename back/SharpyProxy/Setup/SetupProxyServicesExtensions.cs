@@ -24,7 +24,7 @@ public static class SetupProxyServicesExtensions
             .AddSingleton<CertificateStore>()
             .AddSingleton(new AcmeSettings
             {
-                ServerUrl = AcmeKnownServers.LetsEncryptV2StagingUrl
+                ServerUrl = AcmeKnownServers.LetsEncryptV2Url
             })
             .AddScoped<AcmeClient>();
 

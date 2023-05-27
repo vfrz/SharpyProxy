@@ -109,6 +109,8 @@ public class CertificateService
         await _appDbContext.AddAsync(certificateEntity);
         _appDbContext.Remove(challengeEntity);
         await _appDbContext.SaveChangesAsync();
+        
+        await _certificateStore.ReloadCertificatesAsync();
     }
 
     public async Task<Guid> UploadAsync(UploadCertificateModel model)

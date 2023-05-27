@@ -11,7 +11,7 @@ public class AcmeError
    public string Title { get; set; }
    
    [JsonPropertyName("status")]
-   public string Status { get; set; }
+   public int Status { get; set; }
    
    [JsonPropertyName("detail")]
    public string Detail { get; set; }
