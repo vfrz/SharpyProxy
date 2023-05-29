@@ -33,7 +33,7 @@ var order = await client.NewOrderAsync(account, domain);
 var authorizationUrl = order.AuthorizationUrls.Single();
 var authorization = await client.FetchAuthorizationAsync(account, authorizationUrl);
 Console.WriteLine(JsonSerializer.Serialize(authorization));
-Console.WriteLine($"Key: {client.GetAuthorizationKey(account, authorization.HttpChallenge!.Token)}");
+Console.WriteLine($"Key: {AcmeClient.GetAuthorizationKey(account, authorization.HttpChallenge!.Token)}");
 Console.ReadLine();
 
 var challenge = await client.ChallengeReadyForValidationAsync(account, authorization.HttpChallenge!.Url);
