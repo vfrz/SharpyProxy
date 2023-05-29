@@ -83,7 +83,7 @@
         <TabPanel>
           <div class="text-sm text-slate-500 italic text-jus">
             Unmanaged certificates are your own responsibility and they can't be renewed automatically.
-            We advise you to use them unless necessary.
+            We discourage you to use them unless necessary.
           </div>
           <Form v-if="unmanagedFormModel" @submit="saveUnmanaged">
             <div class="block text-sm font-semibold text-slate-700 mt-2">

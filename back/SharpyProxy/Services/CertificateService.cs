@@ -38,7 +38,7 @@ public class CertificateService
         var httpHandler = new SocketsHttpHandler();
         httpHandler.SslOptions.RemoteCertificateValidationCallback = (_, _, _, _) => true;
         using var httpClient = new HttpClient(httpHandler, true);
-        var domainVerificationKey = await httpClient.GetStringAsync($"{model.Domain}/.well-known/sharpy-proxy-domain-verification");
+        var domainVerificationKey = await httpClient.GetStringAsync($"http://{model.Domain}/.well-known/sharpy-proxy-domain-verification");
 
         if (domainVerificationKey != expectedKey)
             throw new Exception("SharpyProxy domain verification failed, are your domain DNS correctly configured to point to SharpyProxy?");
