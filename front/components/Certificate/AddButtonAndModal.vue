@@ -167,7 +167,7 @@ const emptyManagedFormModel: CreateManagedCertificateModel = {
     domain: "",
     email: ""
 };
-const managedFormModel: CreateManagedCertificateModel = reactive({...emptyManagedFormModel});
+const managedFormModel: CreateManagedCertificateModel = reactive(structuredClone(emptyManagedFormModel));
 
 async function saveManaged() {
     loading.value = true;
@@ -182,7 +182,7 @@ const emptyUnmanagedFormModel: UploadCertificateModel = {
     key: "",
     pem: ""
 }
-const unmanagedFormModel: UploadCertificateModel = reactive({...emptyUnmanagedFormModel});
+const unmanagedFormModel: UploadCertificateModel = reactive(structuredClone(emptyUnmanagedFormModel));
 
 async function saveUnmanaged() {
     loading.value = true;
@@ -193,8 +193,8 @@ async function saveUnmanaged() {
 }
 
 function openModal() {
-    Object.assign(managedFormModel, emptyManagedFormModel);
-    Object.assign(unmanagedFormModel, emptyUnmanagedFormModel);
+    Object.assign(managedFormModel, structuredClone(emptyManagedFormModel));
+    Object.assign(unmanagedFormModel, structuredClone(emptyUnmanagedFormModel));
     modalOpened.value = true;
 }
 

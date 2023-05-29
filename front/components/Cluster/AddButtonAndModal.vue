@@ -55,7 +55,7 @@
                  class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-slate-300 rounded-md"/>
         </div>
         <div v-if="index == 0" class="grow-0 flex">
-          <i @click="formModel.destinations.push({address: '', name: ''})"
+          <i @click="addDestinationToFormModel"
              class="bx bx-plus-circle text-2xl text-primary-500 hover:text-primary-600 cursor-pointer"
              title="Add destination">
           </i>
@@ -84,23 +84,33 @@ import {reactive, Ref, ref} from "vue";
 import ButtonStyle from "~/types/ButtonStyle";
 import CreateClusterModel from "~/models/cluster/CreateClusterModel";
 import * as zod from "zod";
+import CreateClusterDestinationModel from "~/models/cluster/destination/CreateClusterDestinationModel";
 
 const emit = defineEmits(["cluster-created"]);
 
 const httpClient = useClustersHttpClient();
 
 const modalOpened: Ref<boolean> = ref(false);
-const formModel: CreateClusterModel = reactive({
+
+const emptyDestination: CreateClusterDestinationModel = {
+    name: "",
+    address: ""
+}
+const emptyFormModel: CreateClusterModel = {
     name: "",
     enabled: true,
-    destinations: []
-});
+    destinations: [emptyDestination]
+}
+const formModel: CreateClusterModel = reactive(structuredClone(emptyFormModel));
+
+function addDestinationToFormModel() {
+    formModel.destinations.push(structuredClone(emptyDestination));
+}
 
 const destinationSchema = zod.object({
     name: zod.string().trim().nonempty("Name can't be empty."),
     address: zod.string().trim().nonempty("Address can't be empty.")
 });
-
 const validationSchema = toTypedSchema(
     zod.object({
         name: zod.string().trim().nonempty("Name can't be empty."),
@@ -120,13 +130,7 @@ async function save() {
 }
 
 function openModal() {
-    formModel.name = "";
-    formModel.enabled = true;
-    formModel.destinations = [{
-        name: '',
-        address: ''
-    }];
-
+    Object.assign(formModel, structuredClone(emptyFormModel));
     modalOpened.value = true;
 }
 
