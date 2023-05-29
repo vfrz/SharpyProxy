@@ -20,15 +20,29 @@ public class CertificateService
 
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public CertificateService(CertificateStore certificateStore, AppDbContext appDbContext, IServiceScopeFactory serviceScopeFactory)
+    private readonly DomainVerificationService _domainVerificationService;
+
+    public CertificateService(CertificateStore certificateStore, AppDbContext appDbContext,
+        IServiceScopeFactory serviceScopeFactory, DomainVerificationService domainVerificationService)
     {
         _certificateStore = certificateStore;
         _appDbContext = appDbContext;
         _serviceScopeFactory = serviceScopeFactory;
+        _domainVerificationService = domainVerificationService;
     }
 
     public async Task CreateManagedCertificateAsync(CreateManagedCertificateModel model)
     {
+        var expectedKey = _domainVerificationService.GenerateKeyForDomain(model.Domain);
+        
+        var httpHandler = new SocketsHttpHandler();
+        httpHandler.SslOptions.RemoteCertificateValidationCallback = (_, _, _, _) => true;
+        using var httpClient = new HttpClient(httpHandler, true);
+        var domainVerificationKey = await httpClient.GetStringAsync($"{model.Domain}/.well-known/sharpy-proxy-domain-verification");
+
+        if (domainVerificationKey != expectedKey)
+            throw new Exception("SharpyProxy domain verification failed, are your domain DNS correctly configured to point to SharpyProxy?");
+        
         using var scope = _serviceScopeFactory.CreateScope();
         var acmeClient = scope.ServiceProvider.GetRequiredService<AcmeClient>();
 
@@ -109,7 +123,7 @@ public class CertificateService
         await _appDbContext.AddAsync(certificateEntity);
         _appDbContext.Remove(challengeEntity);
         await _appDbContext.SaveChangesAsync();
-        
+
         await _certificateStore.ReloadCertificatesAsync();
     }
 

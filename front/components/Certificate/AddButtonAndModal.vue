@@ -2,22 +2,21 @@
   <Button type="button" @click="openModal">
     Add certificate
   </Button>
-
   <Modal :opened="modalOpened">
     <ModalTitle class="mb-2">
       Add certificate
     </ModalTitle>
     <TabGroup>
       <TabList class="border-b border-slate-200 flex mb-2">
-        <Tab v-slot="{ selected }" class="grow">
-          <div
-              :class="[selected ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'py-2 px-1 text-center border-b-2 font-medium']">
+        <Tab :disabled="loading" v-slot="{ selected }" class="grow disabled:pointer-events-none">
+          <div class="py-2 px-1 text-center border-b-2 font-medium"
+               :class="selected ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'">
             Managed
           </div>
         </Tab>
-        <Tab v-slot="{ selected }" class="grow">
-          <div
-              :class="[selected ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'py-2 px-1 text-center border-b-2 font-medium']">
+        <Tab :disabled="loading" v-slot="{ selected }" class="grow disabled:pointer-events-none">
+          <div class="py-2 px-1 text-center border-b-2 font-medium"
+               :class="selected ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'">
             Unmanaged
           </div>
         </Tab>
@@ -26,7 +25,9 @@
         <TabPanel>
           <div class="text-sm text-slate-500 italic">
             Managed certificates are generated and renewed automatically by SharpyProxy using Let's Encrypt;
-            by using it you accept their terms of use.
+            by using it you accept their
+            <NuxtLink class="underline" to="https://letsencrypt.org/repository/" target="_blank">terms of use</NuxtLink>
+            .
           </div>
           <Form v-if="managedFormModel" @submit="saveManaged">
             <div class="block text-sm font-semibold text-slate-700 mt-2">
@@ -37,6 +38,7 @@
                 <Field type="text"
                        name="name"
                        v-model="managedFormModel.name"
+                       :disabled="loading"
                        placeholder="Name (eg: certificate-1)"
                        class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-slate-300 rounded-md"/>
               </div>
@@ -49,6 +51,7 @@
                 <Field type="text"
                        name="domain"
                        v-model="managedFormModel.domain"
+                       :disabled="loading"
                        placeholder="Domain (eg: sharpyproxy.dev)"
                        class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-slate-300 rounded-md"/>
               </div>
@@ -61,15 +64,17 @@
                 <Field type="text"
                        name="email"
                        v-model="managedFormModel.email"
+                       :disabled="loading"
                        placeholder="Email (eg: contact@sharpyproxy.dev)"
                        class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-slate-300 rounded-md"/>
               </div>
             </div>
-            <div class="flex mt-4 gap-x-2">
-              <Button type="submit" class="grow">
-                Save
+            <div class="grid grid-cols-2 mt-4 gap-x-2">
+              <Button :loading="loading" type="submit">
+                {{ loading ? "Generating certificate..." : "Save" }}
               </Button>
-              <Button type="button" class="grow" @click="closeModal" :style="ButtonStyle.RedOutline">
+              <Button :disabled="loading" type="button" @click="closeModal"
+                      :style="ButtonStyle.RedOutline">
                 Cancel
               </Button>
             </div>
@@ -89,6 +94,7 @@
                 <Field type="text"
                        name="name"
                        v-model="unmanagedFormModel.name"
+                       :disabled="loading"
                        placeholder="Name (eg: certificate-1)"
                        class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-slate-300 rounded-md"/>
               </div>
@@ -100,11 +106,12 @@
               <div class="grow">
                 <Field v-slot="{ field, errors }" name="pem" v-model="unmanagedFormModel.pem">
                   <textarea v-bind="field"
-                            rows="4"
+                            :disabled="loading"
+                            rows="5"
                             placeholder="-----BEGIN CERTIFICATE-----
 ...
 -----END CERTIFICATE-----"
-                            class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-slate-300 rounded-md"/>
+                            class="shadow-sm resize-none focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-slate-300 rounded-md"/>
                 </Field>
               </div>
             </div>
@@ -115,19 +122,21 @@
               <div class="grow">
                 <Field v-slot="{ field, errors }" name="key" v-model="unmanagedFormModel.key">
                   <textarea v-bind="field"
-                            rows="4"
+                            :disabled="loading"
+                            rows="5"
                             placeholder="-----BEGIN RSA PRIVATE KEY-----
 ...
 -----END RSA PRIVATE KEY-----"
-                            class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-slate-300 rounded-md"/>
+                            class="shadow-sm resize-none focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-slate-300 rounded-md"/>
                 </Field>
               </div>
             </div>
-            <div class="flex mt-4 gap-x-2">
-              <Button type="submit" class="grow">
-                Save
+            <div class="grid grid-cols-2 mt-4 gap-x-2">
+              <Button :loading="loading" type="submit">
+                {{ loading ? "Saving certificate..." : "Save" }}
               </Button>
-              <Button type="button" class="grow" @click="closeModal" :style="ButtonStyle.RedOutline">
+              <Button :disabled="loading" type="button" @click="closeModal"
+                      :style="ButtonStyle.RedOutline">
                 Cancel
               </Button>
             </div>
@@ -135,53 +144,61 @@
         </TabPanel>
       </TabPanels>
     </TabGroup>
-
-
   </Modal>
 </template>
 
 <script setup lang="ts">
 import {reactive, ref, Ref} from "vue";
 import ModalTitle from "~/components/ModalTitle.vue";
-import Separator from "~/components/Separator.vue";
 import ButtonStyle from "~/types/ButtonStyle";
 import {Tab, TabGroup, TabList, TabPanel, TabPanels} from "@headlessui/vue";
-import CreateClusterModel from "~/models/cluster/CreateClusterModel";
 import CreateManagedCertificateModel from "~/models/certificate/CreateManagedCertificateModel";
 import UploadCertificateModel from "~/models/certificate/UploadCertificateModel";
+import {def} from "@vue/shared";
 
 const emit = defineEmits(["certificate-created"]);
 
 const httpClient = useCertificatesHttpClient();
 const modalOpened: Ref<boolean> = ref(false);
+const loading: Ref<boolean> = ref(false);
 
-const managedFormModel: CreateManagedCertificateModel = reactive({
-  name: "",
-  domain: "",
-  email: ""
-});
+const emptyManagedFormModel: CreateManagedCertificateModel = {
+    name: "",
+    domain: "",
+    email: ""
+};
+const managedFormModel: CreateManagedCertificateModel = reactive({...emptyManagedFormModel});
 
 async function saveManaged() {
-  await httpClient.createManaged(managedFormModel);
-  emit("certificate-created");
+    loading.value = true;
+    await httpClient.createManaged(managedFormModel);
+    closeModal();
+    loading.value = false;
+    emit("certificate-created");
 }
 
-const unmanagedFormModel: UploadCertificateModel = reactive({
-  name: "",
-  key: "",
-  pem: ""
-});
+const emptyUnmanagedFormModel: UploadCertificateModel = {
+    name: "",
+    key: "",
+    pem: ""
+}
+const unmanagedFormModel: UploadCertificateModel = reactive({...emptyUnmanagedFormModel});
 
 async function saveUnmanaged() {
-  await httpClient.upload(unmanagedFormModel);
-  emit("certificate-created")
+    loading.value = true;
+    await httpClient.upload(unmanagedFormModel);
+    closeModal();
+    loading.value = false;
+    emit("certificate-created");
 }
 
 function openModal() {
-  modalOpened.value = true;
+    Object.assign(managedFormModel, emptyManagedFormModel);
+    Object.assign(unmanagedFormModel, emptyUnmanagedFormModel);
+    modalOpened.value = true;
 }
 
 function closeModal() {
-  modalOpened.value = false;
+    modalOpened.value = false;
 }
 </script>

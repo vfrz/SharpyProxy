@@ -8,7 +8,7 @@ using SharpyProxy.Setup;
 
 var builder = WebApplication.CreateBuilder(args)
     .SetupDatabase()
-    .SetupProxyServices();
+    .SetupServices();
 
 var portsSettings = builder.Configuration.GetSection(PortsSettings.Section).Get<PortsSettings>() ?? new PortsSettings();
 
@@ -18,17 +18,11 @@ builder.WebHost.ConfigureKestrel(kestrelOptions =>
     {
         options.UseHttps(httpsOptions =>
         {
-            httpsOptions.ServerCertificateSelector = (context, name) =>
+            httpsOptions.ServerCertificateSelector = (_, name) =>
             {
                 var certificateStore = options.ApplicationServices.GetRequiredService<CertificateStore>();
 
-                if (string.IsNullOrEmpty(name))
-                {
-                    //TODO return default certificate
-                    return null;
-                }
-                    
-                if (certificateStore.LoadedCertificates.TryGetValue(name, out var certificate))
+                if (name is not null && certificateStore.LoadedCertificates.TryGetValue(name, out var certificate))
                     return certificate;
 
                 return null;

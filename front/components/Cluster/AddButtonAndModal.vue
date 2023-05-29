@@ -67,11 +67,11 @@
           </i>
         </div>
       </div>
-      <div class="flex mt-4 gap-x-2">
-        <Button type="submit" class="grow">
+      <div class="grid grid-cols-2 mt-4 gap-x-2">
+        <Button type="submit">
           Save
         </Button>
-        <Button type="button" class="grow" @click="closeModal" :style="ButtonStyle.RedOutline">
+        <Button type="button" @click="closeModal" :style="ButtonStyle.RedOutline">
           Cancel
         </Button>
       </div>

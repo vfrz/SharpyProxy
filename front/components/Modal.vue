@@ -1,13 +1,13 @@
 <template>
   <TransitionRoot
-          :show="opened"
-          as="template"
-          enter="duration-200 ease-out"
-          enter-from="opacity-0"
-          enter-to="opacity-100"
-          leave="duration-200 ease-in"
-          leave-from="opacity-100"
-          leave-to="opacity-0">
+      :show="opened"
+      as="template"
+      enter="duration-200 ease-out"
+      enter-from="opacity-0"
+      enter-to="opacity-100"
+      leave="duration-200 ease-in"
+      leave-from="opacity-100"
+      leave-to="opacity-0">
     <Dialog class="relative z-40">
       <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
                        leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
