@@ -17,7 +17,6 @@ public class AcmeChallengeMiddleware : IMiddleware
             if (context.Request.Path.StartsWithSegments("/.well-known/acme-challenge"))
             {
                 var dbContext = context.RequestServices.GetRequiredService<AppDbContext>();
-                var acmeClient = context.RequestServices.GetRequiredService<AcmeClient>();
 
                 var pathUri = new Uri(context.Request.GetEncodedUrl());
                 var domain = pathUri.Host;
@@ -35,8 +34,9 @@ public class AcmeChallengeMiddleware : IMiddleware
 
                     using var rsa = RSA.Create();
                     rsa.ImportRSAPrivateKey(challenge.LetsEncryptAccount.RSABytes, out _);
+                    var rsaParameters = rsa.ExportParameters(true);
 
-                    var authorizationKey = acmeClient.GetAuthorizationKey(rsa, challenge.Token);
+                    var authorizationKey = AcmeClient.GetAuthorizationKey(rsaParameters, challenge.Token);
 
                     await context.Response.WriteAsync(authorizationKey);
                     return;

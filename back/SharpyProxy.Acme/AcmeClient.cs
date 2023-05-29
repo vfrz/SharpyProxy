@@ -271,16 +271,14 @@ public sealed class AcmeClient : IDisposable
         return new AcmeCertificates(split);
     }
 
-    public string GetAuthorizationKey(AcmeAccount account, string token)
+    public static string GetAuthorizationKey(AcmeAccount account, string token)
     {
-        using var accountRsaKey = account.CreateKeyFromParameters();
-        return GetAuthorizationKey(accountRsaKey, token);
+        return GetAuthorizationKey(account.RSAParameters, token);
     }
 
-    public string GetAuthorizationKey(RSA accountRsaKey, string token)
+    public static string GetAuthorizationKey(RSAParameters accountRsaParameters, string token)
     {
-        //TODO Maybe use this: var jwkThumbprint = new RsaSecurityKey(account.RSAParameters).ComputeJwkThumbprint();
-        return $"{token}.{Base64UrlEncoder.Encode(accountRsaKey.GetJWKThumbprint())}";
+        return $"{token}.{Base64UrlEncoder.Encode(new RsaSecurityKey(accountRsaParameters).ComputeJwkThumbprint())}";
     }
 
     private async Task FetchNewNonceAsync()
