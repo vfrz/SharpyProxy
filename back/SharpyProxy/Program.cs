@@ -1,13 +1,14 @@
 using System.Net;
 using Microsoft.AspNetCore.Diagnostics;
+using SharpyProxy.Certificates;
+using SharpyProxy.Middlewares;
 using SharpyProxy.Models;
-using SharpyProxy.Services;
 using SharpyProxy.Settings;
 using SharpyProxy.Setup;
 
 var builder = WebApplication.CreateBuilder(args)
     .SetupDatabase()
-    .SetupProxyServices();
+    .SetupServices();
 
 var portsSettings = builder.Configuration.GetSection(PortsSettings.Section).Get<PortsSettings>() ?? new PortsSettings();
 
@@ -17,17 +18,11 @@ builder.WebHost.ConfigureKestrel(kestrelOptions =>
     {
         options.UseHttps(httpsOptions =>
         {
-            httpsOptions.ServerCertificateSelector = (context, name) =>
+            httpsOptions.ServerCertificateSelector = (_, name) =>
             {
                 var certificateStore = options.ApplicationServices.GetRequiredService<CertificateStore>();
 
-                if (string.IsNullOrEmpty(name))
-                {
-                    //TODO return default certificate
-                    return null;
-                }
-                    
-                if (certificateStore.LoadedCertificates.TryGetValue(name, out var certificate))
+                if (name is not null && certificateStore.LoadedCertificates.TryGetValue(name, out var certificate))
                     return certificate;
 
                 return null;
@@ -37,6 +32,8 @@ builder.WebHost.ConfigureKestrel(kestrelOptions =>
     kestrelOptions.ListenAnyIP(portsSettings.Http);
     kestrelOptions.ListenAnyIP(portsSettings.Api);
 });
+
+builder.Services.AddScoped<AcmeChallengeMiddleware>();
 
 builder.Services.AddControllers();
 builder.Services.AddCors(o => o.AddPolicy("Default", policyBuilder =>
@@ -70,11 +67,7 @@ app.UseCors("Default");
 app.MapControllers().RequireHost($"*:{portsSettings.Api}");
 app.MapReverseProxy(pipeline =>
 {
-    pipeline.Use((context, next) =>
-    {
-        //TODO Implement ACME HTTP verification here
-        return next();
-    });
+    pipeline.UseMiddleware<AcmeChallengeMiddleware>();
 });
 
 var certificateStore = app.Services.GetRequiredService<CertificateStore>();

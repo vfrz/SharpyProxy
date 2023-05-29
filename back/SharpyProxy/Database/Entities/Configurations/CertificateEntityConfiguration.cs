@@ -20,5 +20,10 @@ public class CertificateEntityConfiguration : IEntityTypeConfiguration<Certifica
 
         builder.Property(certificate => certificate.Key)
             .IsRequired();
+
+        builder.HasOne(certificate => certificate.LetsEncryptAccount)
+            .WithMany(account => account.Certificates)
+            .HasForeignKey(certificate => certificate.LetsEncryptAccountId)
+            .IsRequired(false);
     }
 }

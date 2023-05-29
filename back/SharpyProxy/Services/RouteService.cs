@@ -52,6 +52,7 @@ public class RouteService
     public async Task<RouteModel> GetAsync(Guid id)
     {
         var route = await _appDbContext.Routes
+            .AsNoTracking()
             .FirstOrDefaultAsync(route => route.Id == id);
 
         if (route is null)
@@ -73,6 +74,7 @@ public class RouteService
     public async Task<ListRouteModel[]> ListAsync()
     {
         var routes = await _appDbContext.Routes
+            .AsNoTracking()
             .Select(route => new ListRouteModel
             {
                 Id = route.Id,

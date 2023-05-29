@@ -33,9 +33,19 @@ namespace SharpyProxy.Database.Migrations
                     b.Property<DateTime>("CreatedDateUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Domain")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ExpirationDateUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Key")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<Guid?>("LetsEncryptAccountId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -45,10 +55,15 @@ namespace SharpyProxy.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("UpdatedDateUtc")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LetsEncryptAccountId");
 
                     b.HasIndex("Name")
                         .IsUnique();
@@ -85,6 +100,64 @@ namespace SharpyProxy.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("Clusters");
+                });
+
+            modelBuilder.Entity("SharpyProxy.Database.Entities.LetsEncryptAccountEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<byte[]>("RSABytes")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<DateTime>("UpdatedDateUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("LetsEncryptAccounts");
+                });
+
+            modelBuilder.Entity("SharpyProxy.Database.Entities.LetsEncryptChallengeEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Domain")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("LetsEncryptAccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedDateUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LetsEncryptAccountId");
+
+                    b.ToTable("LetsEncryptChallenges");
                 });
 
             modelBuilder.Entity("SharpyProxy.Database.Entities.RouteEntity", b =>
@@ -126,6 +199,26 @@ namespace SharpyProxy.Database.Migrations
                     b.ToTable("Routes");
                 });
 
+            modelBuilder.Entity("SharpyProxy.Database.Entities.CertificateEntity", b =>
+                {
+                    b.HasOne("SharpyProxy.Database.Entities.LetsEncryptAccountEntity", "LetsEncryptAccount")
+                        .WithMany("Certificates")
+                        .HasForeignKey("LetsEncryptAccountId");
+
+                    b.Navigation("LetsEncryptAccount");
+                });
+
+            modelBuilder.Entity("SharpyProxy.Database.Entities.LetsEncryptChallengeEntity", b =>
+                {
+                    b.HasOne("SharpyProxy.Database.Entities.LetsEncryptAccountEntity", "LetsEncryptAccount")
+                        .WithMany("Challenges")
+                        .HasForeignKey("LetsEncryptAccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LetsEncryptAccount");
+                });
+
             modelBuilder.Entity("SharpyProxy.Database.Entities.RouteEntity", b =>
                 {
                     b.HasOne("SharpyProxy.Database.Entities.ClusterEntity", "Cluster")
@@ -140,6 +233,13 @@ namespace SharpyProxy.Database.Migrations
             modelBuilder.Entity("SharpyProxy.Database.Entities.ClusterEntity", b =>
                 {
                     b.Navigation("Routes");
+                });
+
+            modelBuilder.Entity("SharpyProxy.Database.Entities.LetsEncryptAccountEntity", b =>
+                {
+                    b.Navigation("Certificates");
+
+                    b.Navigation("Challenges");
                 });
 #pragma warning restore 612, 618
         }

@@ -31,6 +31,12 @@ export default function () {
         });
     }
 
+    const delete_ = async (id: string): Promise<any> => {
+        return await httpClient(`/clusters/${id}`, {
+            method: "delete"
+        });
+    }
+
     const list = async (): Promise<ClusterModel[]> => {
         return await httpClient<ClusterModel[]>("/clusters", {
             method: "get"
@@ -41,6 +47,7 @@ export default function () {
         create,
         update,
         get,
+        delete_,
         list
     }
 }

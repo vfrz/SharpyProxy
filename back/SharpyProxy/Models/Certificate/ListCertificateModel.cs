@@ -1,3 +1,5 @@
+using SharpyProxy.Certificates;
+
 namespace SharpyProxy.Models.Certificate;
 
 public class ListCertificateModel
@@ -9,4 +11,6 @@ public class ListCertificateModel
     public DateTime Expiration { get; set; }
     
     public string Domain { get; set; }
+    
+    public CertificateType Type { get; set; }
 }

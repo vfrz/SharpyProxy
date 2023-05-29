@@ -1,13 +1,15 @@
 using FluentValidation;
+using SharpyProxy.Acme;
+using SharpyProxy.Certificates;
 using SharpyProxy.Proxy;
 using SharpyProxy.Services;
 using Yarp.ReverseProxy.Configuration;
 
 namespace SharpyProxy.Setup;
 
-public static class SetupProxyServicesExtensions
+public static class SetupServicesExtensions
 {
-    public static WebApplicationBuilder SetupProxyServices(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder SetupServices(this WebApplicationBuilder builder)
     {
         var services = builder.Services;
 
@@ -19,9 +21,15 @@ public static class SetupProxyServicesExtensions
             .AddScoped<ClusterService>()
             .AddScoped<CertificateService>()
             .AddScoped<CoreService>()
-            .AddSingleton<CertificateStore>();
+            .AddSingleton<DomainVerificationService>()
+            .AddSingleton<CertificateStore>()
+            .AddSingleton(new AcmeSettings
+            {
+                ServerUrl = AcmeKnownServers.LetsEncryptV2Url
+            })
+            .AddScoped<AcmeClient>();
 
-        services.AddValidatorsFromAssembly(typeof(SetupProxyServicesExtensions).Assembly);
+        services.AddValidatorsFromAssembly(typeof(SetupServicesExtensions).Assembly);
         
         return builder;
     }

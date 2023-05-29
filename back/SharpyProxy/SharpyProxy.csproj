@@ -16,4 +16,8 @@
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
         <PackageReference Include="Yarp.ReverseProxy" Version="2.0.0" />
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SharpyProxy.Acme\SharpyProxy.Acme.csproj" />
+    </ItemGroup>
 </Project>

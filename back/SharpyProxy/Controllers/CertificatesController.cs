@@ -7,11 +7,17 @@ namespace SharpyProxy.Controllers;
 [Route("certificates")]
 public class CertificatesController : ControllerBase
 {
-    [HttpPost]
+    [HttpPost("unmanaged")]
     public async Task<Guid> Upload([FromBody] UploadCertificateModel model, [FromServices] CertificateService certificateService)
     {
         var id = await certificateService.UploadAsync(model);
         return id;
+    }
+
+    [HttpPost("managed")]
+    public async Task CreateManaged([FromBody] CreateManagedCertificateModel model, [FromServices] CertificateService certificateService)
+    {
+        await certificateService.CreateManagedCertificateAsync(model);
     }
 
     [HttpDelete("{certificateId:guid}")]
