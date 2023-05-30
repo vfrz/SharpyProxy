@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SharpyProxy.Models;
 using SharpyProxy.Models.Route;
 using SharpyProxy.Services;
 
@@ -8,10 +9,10 @@ namespace SharpyProxy.Controllers;
 public class RoutesController : ControllerBase
 {
     [HttpPost]
-    public async Task<Guid> Create([FromBody] CreateRouteModel model, [FromServices] RouteService routeService)
+    public async Task<ApiResponse<Guid>> Create([FromBody] CreateRouteModel model, [FromServices] RouteService routeService)
     {
         var id = await routeService.CreateAsync(model);
-        return id;
+        return new ApiResponse<Guid>(id);
     }
 
     [HttpDelete("{routeId:guid}")]

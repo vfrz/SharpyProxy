@@ -11,8 +11,10 @@ public class ListRouteModel
     public string[] MatchHosts { get; set; }
 
     public string ClusterName { get; set; }
-    
+
     public Guid ClusterId { get; set; }
+
+    public bool ClusterEnabled { get; set; }
 
     public bool Enabled { get; set; }
 }

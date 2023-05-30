@@ -51,7 +51,8 @@ public class CustomProxyConfigProvider : IProxyConfigProvider
                 RouteId = route.Name,
                 Match = new RouteMatch
                 {
-                    Hosts = route.MatchHosts
+                    Hosts = route.MatchHosts,
+                    Path = route.MatchPath
                 },
                 ClusterId = route.Cluster.Name
             })

@@ -23,9 +23,9 @@ public class RouteService
         {
             Name = model.Name,
             MatchPath = model.MatchPath,
-            MatchHosts = model.MatchHosts.ToList(),
+            MatchHosts = model.MatchHosts?.ToList(),
             ClusterId = model.ClusterId,
-            Enabled = true
+            Enabled = model.Enabled
         };
 
         await _appDbContext.AddAsync(route);
@@ -81,6 +81,7 @@ public class RouteService
                 Name = route.Name,
                 ClusterId = route.ClusterId,
                 ClusterName = route.Cluster.Name,
+                ClusterEnabled = route.Cluster.Enabled,
                 MatchHosts = route.MatchHosts.ToArray(),
                 MatchPath = route.MatchPath,
                 Enabled = route.Enabled

@@ -5,5 +5,6 @@ export default interface ListRouteModel {
     matchHosts: string[],
     clusterId: string,
     clusterName: string,
+    clusterEnabled: boolean,
     enabled: boolean
 }

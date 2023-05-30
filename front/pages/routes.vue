@@ -11,9 +11,7 @@
         </p>
       </div>
       <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-        <Button type="button">
-          Add route
-        </Button>
+        <RouteAddButtonAndModal @route-created="reloadRoutes"></RouteAddButtonAndModal>
       </div>
     </div>
     <div class="flex flex-col mt-4">
@@ -50,7 +48,14 @@
                   {{ route.name }}
                 </td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500" :title="route.clusterId">
-                  {{ route.clusterName }}
+                  <div class="flex items-center">
+                    <span
+                        :class="[route.clusterEnabled ? 'bg-green-400' : 'bg-orange-400', 'flex-shrink-0 inline-block h-2 w-2 rounded-full']"
+                        aria-hidden="true"/>
+                    <span class="ml-2 block truncate">
+                      {{ route.clusterName }}
+                    </span>
+                  </div>
                 </td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
                   {{ route.matchHosts.join(", ") }}

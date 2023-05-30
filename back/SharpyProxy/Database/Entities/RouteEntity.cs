@@ -13,7 +13,7 @@ public class RouteEntity : ITrackedEntity
 
     public string? MatchPath { get; set; }
 
-    public List<string> MatchHosts { get; set; }
+    public List<string>? MatchHosts { get; set; }
 
     public Guid ClusterId { get; set; }
 
