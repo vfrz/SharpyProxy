@@ -1,11 +1,11 @@
 <template>
-  <div class="inline-flex gap-x-2">
-    <span @click="openModal" class="text-primary-500 hover:text-primary-700 cursor-pointer">
+  <div class="inline-flex gap-x-4">
+    <div @click="openModal" class="text-primary-500 hover:text-primary-700 cursor-pointer">
       Edit
-    </span>
-    <span @click="" class="text-red-600 hover:text-red-700 cursor-pointer">
+    </div>
+    <div @click="" class="text-rose-500 hover:text-rose-700 cursor-pointer">
       Delete
-    </span>
+    </div>
   </div>
   <Modal :opened="modalOpened">
     <ModalTitle>
@@ -53,7 +53,7 @@
         </div>
         <div v-else class="grow-0 flex">
           <i @click="updateModel.destinations.splice(updateModel.destinations.indexOf(destination), 1)"
-             class="bx bx-minus-circle text-2xl text-red-500 hover:text-red-600 cursor-pointer"
+             class="bx bx-minus-circle text-2xl text-danger-500 hover:text-danger-600 cursor-pointer"
              title="Remove destination">
           </i>
         </div>
@@ -64,7 +64,7 @@
         </Button>
         <Button type="button"
                 @click="closeModal"
-                :style="ButtonStyle.RedOutline">
+                :style="ButtonStyle.DangerOutline">
           Cancel
         </Button>
       </div>

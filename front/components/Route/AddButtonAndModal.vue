@@ -19,10 +19,10 @@
                  :validate-on-input="true"
                  :validate-on-blur="false"
                  placeholder="Name (eg: route-1)"
-                 :class="errors.name && '!ring-red-500 !border-red-500'"
+                 :class="errors.name && '!ring-danger-500 !border-danger-500'"
                  class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-slate-300 rounded-md"/>
           <ErrorMessage name="name" as="div"
-                        class="text-sm font-semibold text-red-500 first-letter:uppercase mt-1"/>
+                        class="text-sm font-semibold text-danger-500 first-letter:uppercase mt-1"/>
         </div>
       </div>
 
@@ -102,7 +102,7 @@
         <Button type="submit">
           Save
         </Button>
-        <Button type="button" @click="closeModal" :style="ButtonStyle.RedOutline">
+        <Button type="button" @click="closeModal" :style="ButtonStyle.DangerOutline">
           Cancel
         </Button>
       </div>

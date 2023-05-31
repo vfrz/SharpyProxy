@@ -1,5 +1,5 @@
 enum ButtonStyle {
     Primary = "primary",
-    RedOutline = "red-outline"
+    DangerOutline = "red-outline"
 }
 export default ButtonStyle;

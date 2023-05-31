@@ -38,8 +38,8 @@ const props = defineProps({
 
 const classes: ComputedRef<string> = computed(() => {
     switch (props.style) {
-        case ButtonStyle.RedOutline:
-            return "border-red-500 text-red-500 hover:bg-red-500 hover:text-white";
+        case ButtonStyle.DangerOutline:
+            return "border-danger-500 text-danger-500 hover:bg-danger-500 hover:text-white";
         case ButtonStyle.Primary:
         default:
             return "border-transparent text-white bg-primary-500 hover:bg-primary-600";

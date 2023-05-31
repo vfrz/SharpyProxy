@@ -74,7 +74,7 @@
                 {{ loading ? "Generating certificate..." : "Save" }}
               </Button>
               <Button :disabled="loading" type="button" @click="closeModal"
-                      :style="ButtonStyle.RedOutline">
+                      :style="ButtonStyle.DangerOutline">
                 Cancel
               </Button>
             </div>
@@ -136,7 +136,7 @@
                 {{ loading ? "Saving certificate..." : "Save" }}
               </Button>
               <Button :disabled="loading" type="button" @click="closeModal"
-                      :style="ButtonStyle.RedOutline">
+                      :style="ButtonStyle.DangerOutline">
                 Cancel
               </Button>
             </div>
