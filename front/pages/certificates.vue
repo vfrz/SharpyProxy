@@ -60,9 +60,9 @@
                   </div>
                 </td>
                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-semibold sm:pr-6">
-                  <NuxtLink to="#" class="text-primary-500 hover:text-primary-800">
-                    Edit
-                  </NuxtLink>
+                  <div class="inline-flex gap-x-4">
+                    <CertificateDeleteButtonAndModal :certificate-id="certificate.id" :certificate-name="certificate.name" @certificate-deleted="reloadCertificates"/>
+                  </div>
                 </td>
               </tr>
               </tbody>

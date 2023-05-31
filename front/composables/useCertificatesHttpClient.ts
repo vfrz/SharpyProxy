@@ -30,9 +30,16 @@ export default function () {
         })
     }
 
+    const delete_ = async (id: string): Promise<any> => {
+        return await httpClient(`/certificates/${id}`, {
+            method: "delete"
+        });
+    };
+
     return {
         list,
         createManaged,
-        upload
+        upload,
+        delete_
     };
 }
