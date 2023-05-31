@@ -40,6 +40,10 @@ const classes: ComputedRef<string> = computed(() => {
     switch (props.style) {
         case ButtonStyle.DangerOutline:
             return "border-danger-500 text-danger-500 hover:bg-danger-500 hover:text-white";
+        case ButtonStyle.Danger:
+            return "border-transparent text-white bg-danger-500 hover:bg-danger-600";
+        case ButtonStyle.Neutral:
+            return "border-slate-300 text-slate-600 hover:bg-slate-100";
         case ButtonStyle.Primary:
         default:
             return "border-transparent text-white bg-primary-500 hover:bg-primary-600";

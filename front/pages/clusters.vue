@@ -49,7 +49,10 @@
                   <EnabledTag :enabled="cluster.enabled"/>
                 </td>
                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-semibold sm:pr-6">
-                  <ClusterEditButtonAndModal :cluster-id="cluster.id" @cluster-updated="reloadClusters"/>
+                  <div class="inline-flex gap-x-4">
+                    <ClusterEditButtonAndModal :cluster-id="cluster.id" @cluster-updated="reloadClusters"/>
+                    <ClusterDeleteButtonAndModal :cluster-id="cluster.id" :cluster-name="cluster.name" @cluster-deleted="reloadClusters"/>
+                  </div>
                 </td>
               </tr>
               </tbody>

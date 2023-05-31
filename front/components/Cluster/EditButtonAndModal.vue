@@ -1,11 +1,6 @@
 <template>
-  <div class="inline-flex gap-x-4">
-    <div @click="openModal" class="text-primary-500 hover:text-primary-700 cursor-pointer">
-      Edit
-    </div>
-    <div @click="" class="text-rose-500 hover:text-rose-700 cursor-pointer">
-      Delete
-    </div>
+  <div @click="openModal" class="text-primary-500 hover:text-primary-700 cursor-pointer">
+    Edit
   </div>
   <Modal :opened="modalOpened">
     <ModalTitle>

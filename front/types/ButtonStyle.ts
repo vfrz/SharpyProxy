@@ -1,5 +1,7 @@
 enum ButtonStyle {
     Primary = "primary",
-    DangerOutline = "red-outline"
+    DangerOutline = "danger-outline",
+    Danger = "danger",
+    Neutral = "neutral"
 }
 export default ButtonStyle;
