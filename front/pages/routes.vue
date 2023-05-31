@@ -67,9 +67,10 @@
                   <EnabledTag :enabled="route.enabled"/>
                 </td>
                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-semibold sm:pr-6">
-                  <NuxtLink to="#" class="text-primary-500 hover:text-primary-800">
-                    Edit
-                  </NuxtLink>
+                  <div class="inline-flex gap-x-4">
+                    <RouteEditButtonAndModal :route-id="route.id" @route-updated="reloadRoutes"/>
+                    <RouteDeleteButtonAndModal :route-id="route.id" :route-name="route.name" @route-deleted="reloadRoutes"/>
+                  </div>
                 </td>
               </tr>
               </tbody>

@@ -36,6 +36,22 @@ public class RouteService
         return route.Id;
     }
 
+    public async Task UpdateAsync(UpdateRouteModel model)
+    {
+        var entity = await _appDbContext.Routes
+            .FirstAsync(route => route.Id == model.Id);
+
+        entity.Name = model.Name;
+        entity.ClusterId = model.ClusterId;
+        entity.MatchHosts = model.MatchHosts?.ToList();
+        entity.MatchPath = model.MatchPath;
+        entity.Enabled = model.Enabled;
+        
+        await _appDbContext.SaveChangesAsync();
+        
+        _proxyConfigProvider.Refresh();
+    }
+
     public async Task<bool> DeleteAsync(Guid id)
     {
         var deleted = await _appDbContext.Routes
@@ -63,7 +79,7 @@ public class RouteService
             Id = route.Id,
             Name = route.Name,
             ClusterId = route.ClusterId,
-            MatchHosts = route.MatchHosts.ToArray(),
+            MatchHosts = route.MatchHosts?.ToArray() ?? Array.Empty<string>(),
             MatchPath = route.MatchPath,
             Enabled = route.Enabled
         };
@@ -82,7 +98,7 @@ public class RouteService
                 ClusterId = route.ClusterId,
                 ClusterName = route.Cluster.Name,
                 ClusterEnabled = route.Cluster.Enabled,
-                MatchHosts = route.MatchHosts.ToArray(),
+                MatchHosts = route.MatchHosts != null ? route.MatchHosts.ToArray() : Array.Empty<string>(),
                 MatchPath = route.MatchPath,
                 Enabled = route.Enabled
             }).ToArrayAsync();

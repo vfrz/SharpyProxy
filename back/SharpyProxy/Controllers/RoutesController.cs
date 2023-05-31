@@ -15,6 +15,13 @@ public class RoutesController : ControllerBase
         return new ApiResponse<Guid>(id);
     }
 
+    [HttpPut]
+    public async Task<ApiResponse> Update([FromBody] UpdateRouteModel model, [FromServices] RouteService routeService)
+    {
+        await routeService.UpdateAsync(model);
+        return new ApiResponse();
+    }
+
     [HttpDelete("{routeId:guid}")]
     public async Task Delete([FromRoute] Guid routeId, [FromServices] RouteService routeService)
     {
@@ -27,7 +34,7 @@ public class RoutesController : ControllerBase
         var model = await routeService.GetAsync(routeId);
         return model;
     }
-    
+
     [HttpGet]
     public async Task<ListRouteModel[]> List([FromServices] RouteService routeService)
     {
