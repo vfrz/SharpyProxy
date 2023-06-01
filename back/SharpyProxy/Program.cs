@@ -10,11 +10,11 @@ var builder = WebApplication.CreateBuilder(args)
     .SetupDatabase()
     .SetupServices();
 
-var portsSettings = builder.Configuration.GetSection(PortsSettings.Section).Get<PortsSettings>() ?? new PortsSettings();
+var networkSettings = builder.Configuration.GetSection(NetworkSettings.Section).Get<NetworkSettings>() ?? new NetworkSettings();
 
 builder.WebHost.ConfigureKestrel(kestrelOptions =>
 {
-    kestrelOptions.ListenAnyIP(portsSettings.Https, options =>
+    kestrelOptions.ListenAnyIP(networkSettings.ProxyHttpsPort, options =>
     {
         options.UseHttps(httpsOptions =>
         {
@@ -29,8 +29,8 @@ builder.WebHost.ConfigureKestrel(kestrelOptions =>
             };
         });
     });
-    kestrelOptions.ListenAnyIP(portsSettings.Http);
-    kestrelOptions.ListenAnyIP(portsSettings.Api);
+    kestrelOptions.ListenAnyIP(networkSettings.ProxyHttpPort);
+    kestrelOptions.ListenAnyIP(networkSettings.ApiPort);
 });
 
 builder.Services.AddScoped<AcmeChallengeMiddleware>();
@@ -40,7 +40,7 @@ builder.Services.AddCors(o => o.AddPolicy("Default", policyBuilder =>
 {
     policyBuilder
         .AllowCredentials()
-        .WithOrigins("http://localhost:3000")
+        .WithOrigins(networkSettings.DashboardUrl)
         .AllowAnyMethod()
         .AllowAnyHeader();
 }));
@@ -64,7 +64,7 @@ app.UseExceptionHandler(appBuilder =>
 });
 
 app.UseCors("Default");
-app.MapControllers().RequireHost($"*:{portsSettings.Api}");
+app.MapControllers().RequireHost($"*:{networkSettings.ApiPort}");
 app.MapReverseProxy(pipeline =>
 {
     pipeline.UseMiddleware<AcmeChallengeMiddleware>();
